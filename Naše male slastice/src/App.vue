@@ -1,85 +1,100 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterLink, RouterView } from 'vue-router';
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
+  <nav class="navbar navbar-expand-lg navbar-light bg">
+      <div class="container-fluid dropdown">
+        <a class="navbar-brand" href="/"><img src="@/assets/nmslogo.jpg" alt="logo" width="200" height="60px"></a>
+        <button
+          class="btn navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="profil">Profil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/shoppingLista">Shopping Lista</a>
+            </li>            
+            <li class="nav-item">
+              <a class="nav-link" href="/noviRecept">Dodaj recept</a>
+            </li>      
+            <li class="nav-item">
+              <a class="nav-link" href="/oNama">O nama</a>
+            </li>      
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input
+              class="form-control me-2 search-input"
+              type="search"
+              placeholder="Search"
+            />
+            <button class="button1" type="submit">Potraži</button>
+          </form>
+        </div>
+      </div>
+    </nav>
   <RouterView />
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      isLoggedIn: false,
+    };
+  },
+};
+</script>
+
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.bg {
+  background-color: #fee6c1;
 }
-
-.logo {
+.search-input {
+    height: 40px; 
+    margin: 10px auto;
+    justify-content: center;
+  }
+.button1 {
+  width: 60%;
+  height: 40px;
+  margin: 10px auto;
+  justify-content: center;
   display: block;
-  margin: 0 auto 2rem;
+  color: #fff;
+  background: #2a231f;
+  font-size: 1em;
+  font-weight: bold;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  transition: .2s ease-in;
+  cursor: pointer;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.button1:hover {
+  background: #fbf5e5;
+  color: #2a231f;
 }
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
 @media (min-width: 1024px) {
   header {
     display: flex;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
+
 </style>
