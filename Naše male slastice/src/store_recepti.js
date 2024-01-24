@@ -24,6 +24,7 @@ export const cardsData = [
           "Dodajte suve sastojke u mokre i mešajte dok ne dobijete glatko testo.",
           "Sipajte smesu u kalupe za mafine i pecite 20-25 minuta.",
         ],
+        creatorId: 1,
       },
       {
         id: 2,
@@ -49,6 +50,7 @@ export const cardsData = [
           "Dodajte kakao, brašno, so i orase.",
           "Sipajte smesu u pleh i pecite 25-30 minuta.",
         ],
+        creatorId: 3,
       },
       {
         id: 3,
@@ -74,6 +76,7 @@ export const cardsData = [
           "Dodajte puter i rukama umesite mrvice.",
           "Stavite jabuke u pleh, prekrijte smesom od brašna i pecite 40-45 minuta.",
         ],
+        creatorId: 1,
       },
       {
         id: 4,
@@ -98,6 +101,7 @@ export const cardsData = [
           "Složite red piškota, red kreme, ponavljajte dok ne potrošite sastojke.",
           "Pospite kakao u prahu i ostavite u frižideru preko noći.",
         ],
+        creatorId: 5,
       },
       {
         id: 5,
@@ -124,6 +128,7 @@ export const cardsData = [
           "Sipajte smesu preko testa i pecite 25-30 minuta.",
           "Poslužite ohlađeno.",
         ],
+        creatorId: 6,
       },
       {
         id: 6,
@@ -147,6 +152,7 @@ export const cardsData = [
           "Napunite palačinke svježim voćem i pospite šećerom u prahu.",
           "Uživajte u sočnom obroku!",
         ],
+        creatorId: 9,
       },
       {
         id: 7,
@@ -174,6 +180,7 @@ export const cardsData = [
           "Pecite 40-45 minuta na 180 stepeni.",
           "Kada se ohladi, premažite slatkom pavlakom.",
         ],
+        creatorId: 3,
       },
       {
         id: 8,
@@ -204,6 +211,7 @@ export const cardsData = [
           "Dodajte smesi, stavite u kalupe i pecite 20-25 minuta.",
           "Napunite cupcakes kremom od kisele pavlake.",
         ],
+        creatorId: 4,
       },
       {
         id: 9,
@@ -228,6 +236,7 @@ export const cardsData = [
           "Pecite 30-35 minuta na 180 stepeni.",
           "Pospite šećerom u prahu prije posluživanja.",
         ],
+        creatorId: 7,
       },
       {
         id: 10,
@@ -251,6 +260,7 @@ export const cardsData = [
           "Pecite 15-20 minuta na 180 stepeni.",
           "Uvaljajte kiflice u šećer u prahu dok su još tople.",
         ],
+        creatorId: 1,
       },
       {
         id: 11,
@@ -277,6 +287,7 @@ export const cardsData = [
           "Pecite 50-60 minuta na 160 stepeni.",
           "Dekorišite jagodama i ostavite u frižideru preko noći.",
         ],
+        creatorId: 9,
       },  
       {
         id: 12,
@@ -303,6 +314,7 @@ export const cardsData = [
           "Smesu istresite u pleh i pecite 30-35 minuta na 180 stepeni.",
           "Pomešajte šećer u prahu s malo soka od limuna i prelijte kolač.",
         ],
+        creatorId: 2,
       },
       {
         id: 13,
@@ -325,6 +337,7 @@ export const cardsData = [
           "Ispecite tanke palačinke na tiganju.",
           "Razmažite Nutelu po palačinkama, uvijte ih i pospite šećerom u prahu.",
         ],
+        creatorId: 8,
       },
       {
         id: 14,
@@ -349,6 +362,7 @@ export const cardsData = [
           "Mesite smesu, formirajte kuglice i stavite ih u frižider.",
           "Kada se stegnu, kuglice su spremne za posluživanje.",
         ],
+        creatorId: 4,
       },
       {
         id: 15,
@@ -372,6 +386,7 @@ export const cardsData = [
           "Stavite panna cottu u čaše i ostavite da se ohladi.",
           "Prelijte pireom od manga i ostavite u frižideru nekoliko sati.",
         ],
+        creatorId: 4,
       },
       {
         id: 16,
@@ -398,5 +413,6 @@ export const cardsData = [
           "Formirajte kuglice, ostavite da narastu, pa pecite u vreloj ulju.",
           "Napunite krofne voćnim džemom.",
         ],
+        creatorId: 1,
       },
   ];

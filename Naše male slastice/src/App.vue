@@ -20,10 +20,13 @@ import { RouterLink, RouterView } from 'vue-router';
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="profil">Profil</a>
+              <a class="nav-link" href="/profil">Profil</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/shoppingLista">Shopping Lista</a>
+              <a class="nav-link" href="/mojaBiblioteka">Moja biblioteka</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/shoppingLista">Shopping lista</a>
             </li>            
             <li class="nav-item">
               <a class="nav-link" href="/noviRecept">Dodaj recept</a>
@@ -39,7 +42,7 @@ import { RouterLink, RouterView } from 'vue-router';
             <input
               class="form-control me-2 search-input"
               type="search"
-              placeholder="Search"
+              placeholder="Upiši naziv slastice"
             />
             <button class="button1" type="submit">Potraži</button>
           </form>

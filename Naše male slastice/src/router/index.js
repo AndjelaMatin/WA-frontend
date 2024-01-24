@@ -38,6 +38,11 @@ const router = createRouter({
       path: '/shoppingLista',
       name: 'shoppingLista',
       component: () => import('../views/ShoppingLista.vue')
+    },
+    {
+      path: '/mojaBiblioteka',
+      name: 'mojaBiblioteka',
+      component: () => import('../views/MojaBiblioteka.vue')
     }
   ]
 })

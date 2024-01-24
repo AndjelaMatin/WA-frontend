@@ -13,7 +13,7 @@
             <img src="../assets/comment.png" height="25px"> {{ card.comments }}
           </div>
         </div>
-        <a href="#" class="btn button1 mt-2">Prikaži recept</a>
+        <a href="/recept" class="btn button1 mt-2">Prikaži recept</a>
       </div>
     </div>
   </template>

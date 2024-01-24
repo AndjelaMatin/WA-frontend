@@ -1,7 +1,7 @@
 <template>
     <div style="background-image:url('/src/assets/bg.jpg');
            background-size: cover; background-position: center; height: 100vh">
-    <div class="main">
+    <div class="main1">
       <section>        
         <h1>NAŠA SLATKA PRIČA</h1>
         <h4>Tko smo mi?</h4>
@@ -41,34 +41,31 @@
           i korake, a zatim ih dijelite sa svijetom ili čuvajte privatno za svoje
           osobne kolekcije slatkih čarolija.
         </p>
-        <H2>P.S. Hvala vam što ste dio naše slatke avanture!</H2>
+        <h2>P.S. Hvala vam što ste dio naše slatke avanture!</h2>
       </section>
     </div>
 </div>
   </template>
-  
-  <script>
-  export default {
-    name: 'AboutUs',
-  };
-  </script>
-  
-  <style scoped>
 
-.main{
+
+  <style scoped>
+.main1{
     display: flex;
     justify-content: center;
     margin: auto;
-    padding: 15px 15px 15px 15px;
+    padding: 30px 15px 15px 15px;
     width: 1500px;
 	background: transparent;
 	overflow: hidden;
 	background-color: transparent;
-	border-radius: 10px;
-	box-shadow: 5px 20px 50px #2a231f;
 }  
-h1,h2,h4{
-    background-color: #fbf5e5;;
+h1,h2{
+  background-color: #fee6c1;
+  border-radius: 5px;
+  text-align: center;
+}
+h4{
+    background-color: #fbf5e5;
     border-radius: 5px;
     text-align: center;
 }
@@ -76,7 +73,7 @@ p{
     text-align: center;
 }
 @media screen and (max-width: 1024px) {
-  .main {
+  .main1 {
     padding: 10px;
     margin:auto;  
 }

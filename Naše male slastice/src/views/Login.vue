@@ -1,5 +1,6 @@
 <template>
-	<div class="margintop">
+	  <div style="background-image:url('/src/assets/bg.jpg');
+           background-size: cover; background-position: center; height: 100vh">
     <div class="main">  	
       <input type="checkbox" id="chk" aria-hidden="true">
   
@@ -59,9 +60,6 @@
 	background-color: #fee6c1;
 	border-radius: 10px;
 	box-shadow: 5px 20px 50px #2a231f;
-}
-.margintop{
-	margin-top: 50px;
 }
 #chk{
 	display: none;
