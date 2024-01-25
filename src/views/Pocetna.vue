@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-3">
     <h1>Dobrodošli na našu slatku platformu!</h1>
-    <h1 class="mb-4">Najbolji recepti</h1>
+    <h1 class="mb-4">Najbolji recepti:</h1>
     <div class="row">
       <Card
         v-for="card in sortedCards"
