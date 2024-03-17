@@ -1,6 +1,6 @@
 <template>
-  <div class="card rounded shadow card-hover col-lg-4 col-md-6 col-sm-12">
-    <img :src="`../assets/{{ card.image }}`" class="card-img-top img-fluid" alt="Card Image" />
+  <div class="card rounded shadow  card-hover col-lg-3 col-md-4 col-sm-12">
+    <img :src="`{{ card.image }}`" class="card-img-top img-fluid" alt="Card Image" /> 
     <div class="card-body">
       <h5 class="card-title">{{ card.title }}</h5>
       <p class="card-text">{{ card.description }}</p>
@@ -30,7 +30,7 @@ export default {
 
 <style scoped>
 .card {
-  margin: 5px 5px 5px;
+  margin: 5px 20px 5px;
   background-color: #fee6c1;
 }
 .card-hover:hover {

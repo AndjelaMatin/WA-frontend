@@ -1,20 +1,33 @@
 <script setup>
-import { RouterView } from 'vue-router';
+import { RouterView } from "vue-router";
 </script>
 
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg">
-    <router-link class="navbar-brand" to="/"><img src="@/assets/nmslogo.jpg" alt="logo" width="200" height="60px"></router-link>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><router-link class="nav-link" to="/profil">Profil</router-link></li>
-        <li class="nav-item"><router-link class="nav-link" to="/shoppingLista">Shopping lista</router-link></li>
-        <li class="nav-item"><router-link class="nav-link" to="/noviRecept">Dodaj recept</router-link></li>
-        <li class="nav-item"><router-link class="nav-link" to="/oNama">O nama</router-link></li>
-        <li class="nav-item"><router-link class="nav-link" to="/login">Login</router-link></li>
+    <div class="container-fluid">
+    <router-link class="navbar-brand" to="/"
+      ><img src="@/assets/nmslogo.png" alt="logo" width="200" height="60px"/>
+    </router-link>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav me-auto mb-lg-0">
+        <li class="nav-item">
+          <router-link class="nav-link" to="/profil">Profil</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/shoppingLista">Shopping lista</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/noviRecept">Dodaj recept</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/oNama">O nama</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/login">Login</router-link>
+        </li>
       </ul>
       <form class="d-flex">
         <input
@@ -24,6 +37,7 @@ import { RouterView } from 'vue-router';
         />
         <button class="button1" type="submit">Potraži</button>
       </form>
+    </div>
     </div>
   </nav>
   <RouterView />
@@ -43,16 +57,20 @@ export default {
 .nav-link {
   transition: font-weight 0.3s;
 }
-
+#app {
+  background-image: url('@/assets/pitajabuka.jpg');
+  background-size: cover;
+}
 .nav-link:hover {
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 .bg {
   background-color: #fee6c1;
+  margin-bottom: 10px;
 }
 .search-input {
-  height: 40px; 
+  height: 40px;
   margin: 10px auto;
   justify-content: center;
 }
@@ -69,18 +87,11 @@ export default {
   outline: none;
   border: none;
   border-radius: 5px;
-  transition: .2s ease-in;
+  transition: 0.2s ease-in;
   cursor: pointer;
 }
 .button1:hover {
   background: #fbf5e5;
   color: #2a231f;
-}
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
 }
 </style>

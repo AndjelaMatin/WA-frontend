@@ -1,37 +1,100 @@
 <template>
-    <div class="main">
-      <form @submit.prevent="submitForm">
-        <h2>Unos recepta</h2>
+  <div class="container">
+    <form @submit.prevent="submitForm">
+      <h1>Unos recepta</h1>
 
-        <label for="title">Naslov:</label>
-        <input v-model="recipe.title" type="text" id="title" name="title" required><br>
+      <label for="title">Naslov:</label>
+      <input
+        class="form-control"
+        v-model="recipe.title"
+        type="text"
+        id="title"
+        name="title"
+        required
+      /><br />
 
-        <label for="description">Opis:</label>
-        <textarea v-model="recipe.description" id="description" name="description" required></textarea><br>
+      <label for="description">Opis:</label>
+      <textarea
+        class="form-control"
+        v-model="recipe.description"
+        id="description"
+        name="description"
+        required
+      ></textarea
+      ><br />
 
-        <label for="servings">Porcije:</label>
-        <input v-model="recipe.servings" type="number" id="servings" name="servings" required><br>
+      <label for="servings">Porcije:</label>
+      <input
+        class="form-control"
+        v-model="recipe.servings"
+        type="number"
+        id="servings"
+        name="servings"
+        required
+      /><br />
 
-        <label for="ingredients">Sastojci (svaki sastojak upišite u zasebno polje):</label>
-        <div v-for="(ingredient, index) in recipe.ingredients" :key="index">
-          <input v-model="recipe.ingredients[index]" type="text" :name="'ingredient' + index" required>
-        </div>
-        <div class="button-group">
-          <button class="button" type="button" @click="addIngredientField">Dodaj polje</button>
-          <button class="button" type="button" @click="removeIngredientField(index)">Ukloni polje</button>
-        </div><br>
+      <label for="image">Fotografija:</label>
+      <input
+        type="file"
+        id="image"
+        name="image"
+        @change="handleImageUpload"
+      /><br />
 
-        <label for="instructions">Upute (svaki dio uputstva upišite u novo polje, prema koracima izrade):</label>
-        <div v-for="(instruction, index) in recipe.instructions" :key="index">
-          <input v-model="recipe.instructions[index]" type="text" :name="'instruction' + index" required>
-        </div>
-        <div class="button-group">
-          <button class="button" type="button" @click="addInstructionField">Dodaj polje</button>
-          <button class="button" type="button" @click="removeInstructionField(index)">Ukloni polje</button>
-        </div><br>
-        <button class="button button1" type="submit">Potvrdi</button>
-      </form>
-    </div>
+      <label for="ingredients"
+        >Sastojci (svaki sastojak upišite u zasebno polje):</label
+      >
+      <div v-for="(ingredient, index) in recipe.ingredients" :key="index">
+        <input
+          class="form-control"
+          v-model="recipe.ingredients[index]"
+          type="text"
+          :name="'ingredient' + index"
+          required
+        />
+      </div>
+      <div class="button-group">
+        <button class="button" type="button" @click="addIngredientField">
+          Dodaj polje
+        </button>
+        <button
+          class="button"
+          type="button"
+          @click="removeIngredientField(index)"
+        >
+          Ukloni polje
+        </button>
+      </div>
+      <br />
+
+      <label for="instructions"
+        >Upute (svaki dio uputstva upišite u novo polje, prema koracima
+        izrade):</label
+      >
+      <div v-for="(instruction, index) in recipe.instructions" :key="index">
+        <input
+          v-model="recipe.instructions[index]"
+          type="text"
+          :name="'instruction' + index"
+          required
+        />
+      </div>
+      <div class="button-group">
+        <button class="button" type="button" @click="addInstructionField">
+          Dodaj polje
+        </button>
+        <button
+          class="button"
+          type="button"
+          @click="removeInstructionField(index)"
+        >
+          Ukloni polje
+        </button>
+      </div>
+      <br />
+      <button class="button button1" type="submit">Potvrdi</button>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -41,15 +104,23 @@ export default {
       recipe: {
         title: "",
         description: "",
-        image: "",
+        image: null,
         servings: "",
         ingredients: [""],
-        instructions: [""]
-      }
+        instructions: [""],
+      },
     };
   },
   methods: {
     submitForm() {
+      if (this.recipe.ingredients.length < 2) {
+        alert("Morate dodati barem dva sastojka u recept!");
+        return;
+      }
+      if (this.recipe.instructions.length < 1) {
+        alert("Morate dodati barem jednu uputu za izradu recepta!");
+        return;
+      }
       console.log(this.recipe);
     },
     addIngredientField() {
@@ -63,26 +134,24 @@ export default {
     },
     removeInstructionField(index) {
       this.recipe.instructions.splice(index, 1);
-    }
-  }
+    },
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      this.recipe.image = file;
+    },
+  },
 };
 </script>
 
 <style scoped>
-.main{
-  display: flex;
-  justify-content: center;
-  margin: auto;
-  padding: 30px 15px 15px 15px;
-  width: 800px;
-overflow: hidden;
-background-color: transparent;
+h1 {
+  color: #2a231f;
+  background-color: #fee6c1;
+  border-radius: 5px;
+  text-align: center;
 }
-h2{
-  background-color: #2a231f;
-}
-label{
-  background-color: #fbf5e5;;
+label {
+  background-color: #fbf5e5;
   border-radius: 5px;
   text-align: center;
 }
@@ -90,18 +159,19 @@ label{
   width: 100%;
   height: 40px;
   margin: 10px 3px 1px 1px;
-  color: #fff;
+  color: #fbf5e5;
   background: #2a231f;
   font-size: 1em;
   font-weight: bold;
   outline: none;
   border: none;
   border-radius: 5px;
-  transition: .2s ease-in;
+  transition: 0.2s ease-in;
   cursor: pointer;
-  height:30px;
+  height: 30px;
 }
-input,textarea{
+input,
+textarea {
   margin: 3px;
   border-radius: 5px;
   border-color: #2a231f;
@@ -110,11 +180,17 @@ input,textarea{
   background: #fbf5e5;
   color: #2a231f;
 }
-.button1{
+.button1 {
   height: 50px;
+  background: #fee6c1;
+  color: #2a231f;
+}
+.button:hover {
+  color: #fbf5e5;
+  background-color: #2a231f;
 }
 .button-group {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 </style>

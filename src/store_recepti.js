@@ -382,7 +382,7 @@ export const cardsData = [
       id: 10,
       title: "Vanilin kiflice",
       description: "Mekane vanilin kiflice sa orasima",
-      image: "brownies.jpg",
+      image: "tiramisu.jpg",
       likes: 30,
       comments: 0,
       servings: 20,
