@@ -8,7 +8,7 @@ const router = createRouter({
       path: '/',
       name: 'pocetnaStranica',
       component: PocetnaStranica
-    },
+    },    
     {
       path: '/login',
       name: 'loginSignup',
@@ -32,7 +32,8 @@ const router = createRouter({
     {
       path: '/recept/:id',
       name: 'receptStranica',
-      component: () => import('../views/ReceptStranica.vue')
+      component: () => import('../views/ReceptStranica.vue'),
+      props: true,
     },
     {
       path: '/shoppingLista',

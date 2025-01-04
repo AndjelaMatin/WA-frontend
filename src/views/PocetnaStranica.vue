@@ -15,7 +15,6 @@
 
 <script>
 import Card from "../components/CardComponent.vue";
-import { cardsData } from "@/store_recepti";
 
 export default {
   components: {
@@ -23,14 +22,34 @@ export default {
   },
   data() {
     return {
-      cards: cardsData,
+      cards: [],
     };
+  },
+  methods: {
+    async prikazRecepata() {
+      try {
+        const response = await fetch("http://localhost:3000/recepti");
+        const data = await response.json();
+        console.log("Podaci s backenda", data);
+        this.cards = data.map(dok => ({
+          id: dok._id,
+          title: dok.title,
+          description: dok.description,
+          likes: dok.likes,
+          image: dok.image
+        }));
+      } catch (error) {
+        console.error("Greška pri preuzimanju podataka:", error);
+      }
+    },
   },
   computed: {
     sortedCards() {
-      const sortedCards = this.cards.slice().sort((a, b) => b.likes - a.likes);
-      return sortedCards.slice(0, 10);
+      return this.cards.slice().sort((a, b) => b.likes - a.likes).slice(0, 10);
     },
+  },
+  mounted() {
+    this.prikazRecepata();
   },
 };
 </script>

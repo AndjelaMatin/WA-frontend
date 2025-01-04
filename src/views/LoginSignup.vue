@@ -3,12 +3,12 @@
     <input type="checkbox" id="chk" aria-hidden="true" />
     <div class="signup">
       <form>
-        <label for="chk" aria-hidden="true">Sign up</label>
+        <label for="chk" aria-hidden="true">Registracija</label>
         <input
           v-model="userName"
           type="text"
           name="txt"
-          placeholder="User name"
+          placeholder="Ime i prezime"
           required=""
         />
         <input
@@ -25,13 +25,20 @@
           placeholder="Lozinka"
           required=""
         />
-        <button @click.prevent="signup">Sign up</button>
+        <input
+          v-model="password1"
+          type="password"
+          name="pswd1"
+          placeholder="Ponovljena lozinka"
+          required=""
+        />
+        <button @click.prevent="signup">Registracija</button>
       </form>
     </div>
 
     <div class="login">
       <form>
-        <label for="chk" aria-hidden="true">Login</label>
+        <label for="chk" aria-hidden="true">Prijava</label>
         <input
           v-model="loginEmail"
           type="email"
@@ -46,7 +53,7 @@
           placeholder="Lozinka"
           required=""
         />
-        <button @click.prevent="login">Login</button>
+        <button @click.prevent="login">Prijava</button>
       </form>
     </div>
   </div>
