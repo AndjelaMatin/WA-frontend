@@ -22,12 +22,12 @@ export default {
       recepti: [], // Skladište za recepte
     };
   },
- async created() {
+  async created() {
     try {
       // Povlačenje recepata sa backend-a
       const response = await api.get('/recepti');
       this.recepti = response.data; 
-      console.log(response.data)// Smeštamo recepte u lokalni state
+      console.log(response.data); // Smeštamo recepte u lokalni state
     } catch (error) {
       console.error('Greška pri povlačenju recepata:', error);
     }
@@ -36,16 +36,16 @@ export default {
 </script>
 
 <style scoped>
-
 .recepti-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px; 
+  justify-items: center; 
 }
 
 .recept-card {
-  width: 300px;
+  width: 100%; 
+  max-width: 300px; 
   padding: 15px;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -56,7 +56,8 @@ export default {
 
 .recept-image {
   width: 100%;
-  height: auto;
+  height: 200px;
+  object-fit: cover;
   border-radius: 8px;
   margin-bottom: 15px;
 }

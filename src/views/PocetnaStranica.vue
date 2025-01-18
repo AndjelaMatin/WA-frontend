@@ -2,12 +2,12 @@
   <div class="container mt-3">
     <h1>Dobrodošli na našu slatku platformu!</h1>
     <h1 class="mb-4">Najbolji recepti</h1>
-    <div class="row">
+    <div>
       <Card
         v-for="card in sortedCards"
         :key="card.id"
         :card="card"
-        class="col-md-4 mb-4"
+        class="card-item"
       />
     </div>
   </div>
@@ -48,3 +48,8 @@ export default {
 };
 </script>
 
+<style scoped>
+.card-item {
+  width: 100%; /* Osigurava da kartica zauzima punu širinu unutar svoje kolone */
+}
+</style>
