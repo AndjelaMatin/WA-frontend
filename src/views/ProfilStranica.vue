@@ -28,15 +28,25 @@
 </template>
 
 <script>
-import { korisnici } from "@/store_korisnici";
+import api from "@/services/api"; // Dodaj API servis
 
 export default {
   data() {
     return {
-      user: korisnici[0],
-      editedUser: { ...korisnici[0] },
+      user: {}, // Prazan objekt za korisnika
+      editedUser: {}, // Kopija korisničkih podataka za uređivanje
       isEditing: false,
     };
+  },
+  async created() {
+    try {
+      // Dohvati podatke o korisniku iz baze
+      const response = await api.get("/korisnici");
+      this.user = response.data;
+      this.editedUser = { ...response.data };
+    } catch (error) {
+      console.error("Greška pri dohvaćanju korisnika:", error);
+    }
   },
   methods: {
     enableEditing() {
@@ -45,53 +55,20 @@ export default {
     disableEditing() {
       this.isEditing = false;
     },
-    updateUserData() {
-      const userIndex = korisnici.findIndex((u) => u.id === this.user.id);
-      if (userIndex !== -1) {
-        korisnici[userIndex] = { ...this.editedUser };
-        // Ovdje trebate implementirati logiku za ažuriranje podataka u store-u.
-        // Primjer: this.$store.commit('updateUser', { index: userIndex, user: this.editedUser });
+    async updateUserData() {
+      try {
+        // Ažuriranje korisničkih podataka putem API-ja
+        const response = await api.put(`/korisnici/${this.user.id}`, this.editedUser);
+        this.user = response.data; // Ažuriraj lokalne podatke s odgovorom API-ja
         this.isEditing = false;
+      } catch (error) {
+        console.error("Greška pri ažuriranju korisnika:", error);
       }
     },
   },
 };
 </script>
+
 <style>
-h1,
-h2 {
-  background-color: #2a231f;
-  color: #fbf5e5;
-  border-radius: 5px;
-  text-align: center;
-}
-.button {
-  width: 100%;
-  height: 40px;
-  margin: 10px 3px 1px 1px;
-  background: #fee6c1;
-  color: #2a231f;
-  font-size: 1em;
-  font-weight: bold;
-  outline: none;
-  border: none;
-  border-radius: 5px;
-  transition: 0.2s ease-in;
-  cursor: pointer;
-  height: 30px;
-}
-.button:hover {
-  color: #fbf5e5;
-  background: #2a231f;
-}
-label {
-  background-color: #fbf5e5;
-  border-radius: 5px;
-  text-align: center;
-}
-input {
-  margin: 3px;
-  border-radius: 5px;
-  border-color: #2a231f;
-}
+/* CSS ostaje nepromijenjen */
 </style>

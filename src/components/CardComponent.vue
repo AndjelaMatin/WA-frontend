@@ -1,66 +1,64 @@
 <template>
-  <div class="card rounded shadow  card-hover col-lg-3 col-md-4 col-sm-12">
-    <img :src="`{{ card.image }}`" class="card-img-top img-fluid" alt="Card Image" /> 
-    <div class="card-body">
-      <h5 class="card-title">{{ card.title }}</h5>
-      <p class="card-text">{{ card.description }}</p>
-      <div class="d-flex justify-content-between">
-        <div>
-          <img src="../assets/heart.png" height="25px" /> {{ card.likes }}
-        </div>
-        <div>
-          <img src="../assets/comment.png" height="25px" /> {{ card.comments }}
-        </div>
+  <div>
+    <div class="recepti-container">
+      <!-- Prikaz recepata -->
+      <div class="recept-card" v-for="recept in recepti" :key="recept._id">
+        <img :src="recept.slika" alt="Slika recepta" class="recept-image" />
+        <h2>{{ recept.naziv }}</h2>
+        <p><strong>Sastojci:</strong> {{ recept.sastojci.join(', ') }}</p>
+        <p><strong>Upute:</strong> {{ recept.upute }}</p>
+        <p><strong>Porcije:</strong> {{ recept.porcije }}</p>
+        <p><strong>Sviđanja:</strong> {{ recept.svidanja }}</p>
       </div>
-      <router-link :to="'/recept/' + card.id" class="btn button1 mt-2">Prikaži recept</router-link>
     </div>
   </div>
 </template>
 
 <script>
+import api from '@/services/api'; // Import API instance
 export default {
-  props: {
-    card: {
-      type: Object,
-      required: true,
-    },
+  data() {
+    return {
+      recepti: [], // Skladište za recepte
+    };
+  },
+  async created() {
+    try {
+      // Povlačenje recepata sa backend-a
+      const response = await api.get('/recepti');
+      this.recepti = response.data; 
+      console.log(response.data); // Smeštamo recepte u lokalni state
+    } catch (error) {
+      console.error('Greška pri povlačenju recepata:', error);
+    }
   },
 };
 </script>
 
 <style scoped>
-.card {
-  margin: 5px 20px 5px;
-  background-color: #fee6c1;
-}
-.card-hover:hover {
-  transform: translate(0, -5px);
-  transition: transform 0.3s ease-in-out;
+.recepti-container {
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px; 
+  justify-items: center; 
 }
 
-.card-img-top {
+.recept-card {
+  width: 100%; 
+  max-width: 300px; 
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.recept-image {
   width: 100%;
-  height: auto;
-  margin: 10px auto;
-}
-
-.button1 {
-  width: 100%;
-  height: 40px;
-  margin: 10px auto;
-  color: #fff;
-  background: #2a231f;
-  font-size: 1em;
-  font-weight: bold;
-  outline: none;
-  border: none;
-  border-radius: 5px;
-  transition: 0.2s ease-in;
-  cursor: pointer;
-}
-
-.button1:hover {
-  background: #fbf5e5;
-  color: #2a231f;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
 }
 </style>
