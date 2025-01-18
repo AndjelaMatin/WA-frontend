@@ -6,7 +6,6 @@
         <img :src="recept.slika" alt="Slika recepta" class="recept-image" />
         <h2>{{ recept.naziv }}</h2>
         <p><strong>Sastojci:</strong> {{ recept.sastojci.join(', ') }}</p>
-        <p><strong>Upute:</strong> {{ recept.upute }}</p>
         <p><strong>Porcije:</strong> {{ recept.porcije }}</p>
         <p><strong>Sviđanja:</strong> {{ recept.svidanja }}</p>
       </div>
