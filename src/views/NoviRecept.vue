@@ -1,98 +1,56 @@
 <template>
-  <div class="container">
-    <form @submit.prevent="submitForm">
-      <h1>Unos recepta</h1>
+  <div class="form-container">
+    <h2 class="form-title">Dodaj Novi Recept</h2>
+    <form @submit.prevent="addRecipe" class="recipe-form">
+      <div class="form-group">
+        <label for="title">Naslov</label>
+        <input id="title" v-model="title" placeholder="Unesi naslov" required />
+      </div>
 
-      <label for="title">Naslov:</label>
-      <input
-        class="form-control"
-        v-model="recipe.title"
-        type="text"
-        id="title"
-        name="title"
-        required
-      /><br />
+      <div class="form-group">
+        <label for="description">Opis</label>
+        <textarea id="description" v-model="description" placeholder="Unesi opis" required></textarea>
+      </div>
 
-      <label for="description">Opis:</label>
-      <textarea
-        class="form-control"
-        v-model="recipe.description"
-        id="description"
-        name="description"
-        required
-      ></textarea
-      ><br />
+      <div class="form-group">
+        <label for="image">URL slike</label>
+        <input id="image" v-model="image" placeholder="Unesi URL slike" />
+      </div>
 
-      <label for="servings">Porcije:</label>
-      <input
-        class="form-control"
-        v-model="recipe.servings"
-        type="number"
-        id="servings"
-        name="servings"
-        required
-      /><br />
-
-      <label for="image">Fotografija:</label>
-      <input
-        type="file"
-        id="image"
-        name="image"
-        @change="handleImageUpload"
-      /><br />
-
-      <label for="ingredients"
-        >Sastojci (svaki sastojak upišite u zasebno polje):</label
-      >
-      <div v-for="(ingredient, index) in recipe.ingredients" :key="index">
+      <div class="form-group">
+        <label for="servings">Broj porcija</label>
         <input
-          class="form-control"
-          v-model="recipe.ingredients[index]"
-          type="text"
-          :name="'ingredient' + index"
-          required
+          id="servings"
+          v-model.number="servings"
+          type="number"
+          placeholder="Broj porcija"
+          min="1"
         />
       </div>
-      <div class="button-group">
-        <button class="button" type="button" @click="addIngredientField">
-          Dodaj polje
-        </button>
-        <button
-          class="button"
-          type="button"
-          @click="removeIngredientField(index)"
-        >
-          Ukloni polje
-        </button>
-      </div>
-      <br />
 
-      <label for="instructions"
-        >Upute (svaki dio uputstva upišite u novo polje, prema koracima
-        izrade):</label
-      >
-      <div v-for="(instruction, index) in recipe.instructions" :key="index">
-        <input
-          v-model="recipe.instructions[index]"
-          type="text"
-          :name="'instruction' + index"
-          required
-        />
+      <div class="form-group">
+        <label for="ingredients">Sastojci</label>
+        <div v-for="(ingredient, index) in ingredients" :key="index" class="dynamic-input">
+          <input
+            v-model="ingredients[index]"
+            placeholder="Unesi sastojak"
+            required
+          />
+          <button type="button" @click="removeIngredient(index)" class="remove-btn">Ukloni</button>
+        </div>
+        <button type="button" @click="addIngredient" class="add-btn">Dodaj sastojak</button>
       </div>
-      <div class="button-group">
-        <button class="button" type="button" @click="addInstructionField">
-          Dodaj polje
-        </button>
-        <button
-          class="button"
-          type="button"
-          @click="removeInstructionField(index)"
-        >
-          Ukloni polje
-        </button>
+
+      <div class="form-group">
+        <label for="steps">Koraci pripreme</label>
+        <div v-for="(step, index) in steps" :key="index" class="dynamic-input">
+          <textarea v-model="steps[index]" placeholder="Unesi korak pripreme" required></textarea>
+          <button type="button" @click="removeStep(index)" class="remove-btn">Ukloni</button>
+        </div>
+        <button type="button" @click="addStep" class="add-btn">Dodaj korak</button>
       </div>
-      <br />
-      <button class="button button1" type="submit">Potvrdi</button>
+
+      <button type="submit" class="submit-btn">Dodaj Recept</button>
     </form>
   </div>
 </template>
@@ -101,96 +59,167 @@
 export default {
   data() {
     return {
-      recipe: {
-        title: "",
-        description: "",
-        image: null,
-        servings: "",
-        ingredients: [""],
-        instructions: [""],
-      },
+      title: '',
+      description: '',
+      image: '',
+      servings: 1,
+      ingredients: [''],
+      steps: [''], // Polje za korake pripreme
     };
   },
   methods: {
-    submitForm() {
-      if (this.recipe.ingredients.length < 2) {
-        alert("Morate dodati barem dva sastojka u recept!");
-        return;
+    addIngredient() {
+      this.ingredients.push('');
+    },
+    removeIngredient(index) {
+      this.ingredients.splice(index, 1);
+    },
+    addStep() {
+      this.steps.push(''); // Dodavanje praznog koraka
+    },
+    removeStep(index) {
+      this.steps.splice(index, 1); // Uklanjanje određenog koraka
+    },
+    async addRecipe() {
+      try {
+        const newRecipe = {
+          naziv: this.title,
+          sastojci: this.ingredients,
+          upute: this.steps, // Sprema korake pripreme kao polje
+          slika: this.image,
+          porcije: this.servings,
+        };
+
+        console.log('Podaci koji se šalju:', newRecipe);
+
+        const response = await fetch('/api/recepti', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newRecipe),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Greška: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Recept uspješno dodan:', data);
+
+        // Reset forme
+        this.resetForm();
+        alert('Recept uspješno dodan!');
+      } catch (error) {
+        console.error('Greška pri dodavanju recepta:', error);
+        alert('Došlo je do greške. Pokušajte ponovno.');
       }
-      if (this.recipe.instructions.length < 1) {
-        alert("Morate dodati barem jednu uputu za izradu recepta!");
-        return;
-      }
-      console.log(this.recipe);
     },
-    addIngredientField() {
-      this.recipe.ingredients.push("");
-    },
-    removeIngredientField(index) {
-      this.recipe.ingredients.splice(index, 1);
-    },
-    addInstructionField() {
-      this.recipe.instructions.push("");
-    },
-    removeInstructionField(index) {
-      this.recipe.instructions.splice(index, 1);
-    },
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      this.recipe.image = file;
+    resetForm() {
+      this.title = '';
+      this.description = '';
+      this.image = '';
+      this.servings = 1;
+      this.ingredients = [''];
+      this.steps = [''];
     },
   },
 };
 </script>
 
 <style scoped>
-h1 {
-  color: #2a231f;
-  background-color: #fee6c1;
-  border-radius: 5px;
-  text-align: center;
-}
-label {
+.form-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px;
   background-color: #fbf5e5;
-  border-radius: 5px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
   text-align: center;
-}
-.button {
-  width: 100%;
-  height: 40px;
-  margin: 10px 3px 1px 1px;
-  color: #fbf5e5;
-  background: #2a231f;
-  font-size: 1em;
+  margin-bottom: 20px;
+  font-size: 28px;
   font-weight: bold;
-  outline: none;
+  color: #2a231f;
+  background-color: #ffe9c6;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.recipe-form .form-group {
+  margin-bottom: 20px;
+}
+
+.recipe-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.recipe-form input,
+.recipe-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.recipe-form textarea {
+  resize: vertical;
+}
+
+.dynamic-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dynamic-input input,
+.dynamic-input textarea {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.add-btn,
+.remove-btn,
+.submit-btn {
+  background-color: #007bff;
+  color: #fff;
   border: none;
-  border-radius: 5px;
-  transition: 0.2s ease-in;
+  border-radius: 6px;
+  padding: 10px 14px;
   cursor: pointer;
-  height: 30px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
 }
-input,
-textarea {
-  margin: 3px;
-  border-radius: 5px;
-  border-color: #2a231f;
+
+.add-btn:hover,
+.remove-btn:hover,
+.submit-btn:hover {
+  background-color: #0056b3;
 }
-.button:hover {
-  background: #fbf5e5;
-  color: #2a231f;
+
+.remove-btn {
+  background-color: #dc3545;
 }
-.button1 {
-  height: 50px;
-  background: #fee6c1;
-  color: #2a231f;
+
+.remove-btn:hover {
+  background-color: #a71d2a;
 }
-.button:hover {
-  color: #fbf5e5;
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
   background-color: #2a231f;
 }
-.button-group {
-  display: flex;
-  justify-content: center;
+
+.submit-btn:hover {
+  background-color: #1a1815;
 }
 </style>
