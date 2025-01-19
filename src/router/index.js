@@ -30,9 +30,10 @@ const router = createRouter({
       component: () => import('../views/ONama.vue')
     },
     {
-      path: '/recept/:id',
-      name: 'receptStranica',
-      component: () => import('../views/ReceptStranica.vue')
+      path: '/recepti/:id',
+      name: 'ReceptStranica',
+      component: () => import('../views/ReceptStranica.vue'),
+      props:true,
     },
     {
       path: '/shoppingLista',
