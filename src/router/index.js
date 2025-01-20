@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory} from 'vue-router'
 import PocetnaStranica from '../views/PocetnaStranica.vue'
 
 const router = createRouter({
@@ -7,7 +7,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'pocetnaStranica',
-      component: PocetnaStranica
+      component: PocetnaStranica,
+      props:true,
     },
     {
       path: '/login',
@@ -30,9 +31,10 @@ const router = createRouter({
       component: () => import('../views/ONama.vue')
     },
     {
-      path: '/recept/:id',
-      name: 'receptStranica',
-      component: () => import('../views/ReceptStranica.vue')
+      path: '/recepti/:id',
+      name: 'ReceptStranica',
+      component: () => import('../views/ReceptStranica.vue'),
+      props:true,
     },
     {
       path: '/shoppingLista',
