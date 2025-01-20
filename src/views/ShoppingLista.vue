@@ -124,7 +124,7 @@ export default {
   max-width: 700px;
   margin: 20px auto;
   padding: 20px;
-  background: #fee6c1;
+  background: #fbf5e5;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -180,7 +180,7 @@ input {
   justify-content: space-between;
   margin: 10px 0;
   padding: 10px;
-  background: #fbf5e5;
+  background: #fee6c1;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background 0.3s ease;

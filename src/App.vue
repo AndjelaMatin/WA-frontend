@@ -29,14 +29,6 @@ import { RouterView } from "vue-router";
           <router-link class="nav-link" to="/login">Login</router-link>
         </li>
       </ul>
-      <form class="d-flex">
-        <input
-          class="form-control me-2 search-input"
-          type="search"
-          placeholder="Upiši naziv slastice"
-        />
-        <button class="button1" type="submit">Potraži</button>
-      </form>
     </div>
     </div>
   </nav>

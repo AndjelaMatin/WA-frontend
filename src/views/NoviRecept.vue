@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <h2 class="form-title">Dodaj Novi Recept</h2>
+    <h2 class="form-title">DODAJ NOVI RECEPT</h2>
     <form @submit.prevent="addRecipe" class="recipe-form">
       <div class="form-group">
         <label for="title">Naslov</label>
@@ -50,7 +50,7 @@
         <button type="button" @click="addStep" class="add-btn">Dodaj korak</button>
       </div>
 
-      <button type="submit" class="submit-btn">Dodaj Recept</button>
+      <button type="submit" class="submit-btn">Dodaj recept</button>
     </form>
   </div>
 </template>
