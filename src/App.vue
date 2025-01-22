@@ -1,17 +1,15 @@
 <script setup>
 import { computed } from "vue";
-import { useStore } from "vuex"; // Import Vuex store
-import { useRouter } from "vue-router"; // Import Vue Router
+import { useStore } from "vuex"; 
+import { useRouter } from "vue-router"; 
 
-// Access Vue Router and Vuex store
 const router = useRouter();
 const store = useStore();
 
-// Access Vuex state and methods
-const isAuthenticated = computed(() => store.state.isAuthenticated); // Computed property for state
+const isAuthenticated = computed(() => store.state.isAuthenticated); 
 const handleLogout = () => {
-  store.dispatch("logout"); // Dispatch the logout action
-  router.push("/"); // Redirect to home page
+  store.dispatch("logout"); 
+  router.push("/"); 
 };
 </script>
 
@@ -35,16 +33,16 @@ const handleLogout = () => {
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav me-auto mb-lg-0">
         <li class="nav-item">
-          <router-link class="nav-link" to="/profil">Profil</router-link>
+          <router-link class="nav-link" to="/oNama">O nama</router-link>
         </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/shoppingLista">Shopping lista</router-link>
-        </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="isAuthenticated">
           <router-link class="nav-link" to="/noviRecept">Dodaj recept</router-link>
         </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/oNama">O nama</router-link>
+        <li class="nav-item" v-if="isAuthenticated">
+          <router-link class="nav-link" to="/shoppingLista">Shopping lista</router-link>
+        </li>
+        <li class="nav-item" v-if="isAuthenticated">
+          <router-link class="nav-link" to="/profil">Profil</router-link>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto"> 

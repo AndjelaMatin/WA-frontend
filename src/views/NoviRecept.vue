@@ -64,7 +64,7 @@ export default {
       image: '',
       servings: 1,
       ingredients: [''],
-      steps: [''], // Polje za korake pripreme
+      steps: [''], 
     };
   },
   methods: {
@@ -75,46 +75,48 @@ export default {
       this.ingredients.splice(index, 1);
     },
     addStep() {
-      this.steps.push(''); // Dodavanje praznog koraka
+      this.steps.push(''); 
     },
     removeStep(index) {
-      this.steps.splice(index, 1); // Uklanjanje određenog koraka
+      this.steps.splice(index, 1); 
     },
     async addRecipe() {
-      try {
-        const newRecipe = {
-          naziv: this.title,
-          sastojci: this.ingredients,
-          upute: this.steps, // Sprema korake pripreme kao polje
-          slika: this.image,
-          porcije: this.servings,
-        };
+  try {
+    const newRecipe = {
+      naziv: this.title,
+      sastojci: this.ingredients,
+      upute: this.steps,
+      slika: this.image,
+      porcije: this.servings,
+    };
 
-        console.log('Podaci koji se šalju:', newRecipe);
+    console.log('Podaci koji se šalju:', newRecipe);
 
-        const response = await fetch('/api/recepti', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newRecipe),
-        });
+    const token = localStorage.getItem('token'); 
 
-        if (!response.ok) {
-          throw new Error(`Greška: ${response.status} - ${response.statusText}`);
-        }
+    const response = await fetch('/api/recepti', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(newRecipe),
+    });
 
-        const data = await response.json();
-        console.log('Recept uspješno dodan:', data);
+    if (!response.ok) {
+      throw new Error(`Greška: ${response.status} - ${response.statusText}`);
+    }
 
-        // Reset forme
-        this.resetForm();
-        alert('Recept uspješno dodan!');
-      } catch (error) {
-        console.error('Greška pri dodavanju recepta:', error);
-        alert('Došlo je do greške. Pokušajte ponovno.');
-      }
-    },
+    const data = await response.json();
+    console.log('Recept uspješno dodan:', data);
+
+    this.resetForm();
+    alert('Recept uspješno dodan!');
+  } catch (error) {
+    console.error('Greška pri dodavanju recepta:', error);
+    alert('Došlo je do greške. Pokušajte ponovno.');
+  }
+},
     resetForm() {
       this.title = '';
       this.description = '';
@@ -187,38 +189,38 @@ export default {
 
 .add-btn,
 .submit-btn {
-  background-color: #2a231f; /* Tamna smeđa */
-  color: #fff; /* Bijela boja za tekst */
+  background-color: #2a231f; 
+  color: #fff; 
   border: none;
-  border-radius: 5px; /* Zaobljeni rubovi */
+  border-radius: 5px; 
   padding: 10px 20px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Efekti na hover */
+  transition: background-color 0.3s ease, transform 0.3s ease; 
 }
 
 .add-btn:hover,
 .submit-btn:hover {
-  background-color: #fbf5e5; /* Svjetlija pozadina */
-  color: #2a231f; /* Tamni tekst */
-  transform: scale(1.05); /* Blago povećanje */
+  background-color: #fbf5e5; 
+  color: #2a231f; 
+  transform: scale(1.05);
 }
 
 .remove-btn {
-  background-color: #dc3545; /* Crvena */
-  color: #fff; /* Bijeli tekst */
+  background-color: #dc3545; 
+  color: #fff; 
   border: none;
-  border-radius: 5px; /* Zaobljeni rubovi */
-  padding: 5px 10px; /* Manji padding za manju veličinu */
-  font-size: 14px; /* Smanjena veličina fonta */
+  border-radius: 5px; 
+  padding: 5px 10px;
+  font-size: 14px; 
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .remove-btn:hover {
-  background-color: #a71d2a; /* Tamnija crvena za hover */
+  background-color: #a71d2a;
 }
 
 .submit-btn {
