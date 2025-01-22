@@ -9,21 +9,21 @@
           type="text"
           name="txt"
           placeholder="User name"
-          required=""
+          required
         />
         <input
           v-model="email"
           type="email"
           name="email"
           placeholder="Email"
-          required=""
+          required
         />
         <input
           v-model="password"
           type="password"
           name="pswd"
           placeholder="Lozinka"
-          required=""
+          required
         />
         <button @click.prevent="signup">Sign up</button>
       </form>
@@ -37,14 +37,14 @@
           type="email"
           name="email"
           placeholder="Email"
-          required=""
+          required
         />
         <input
           v-model="loginPassword"
           type="password"
           name="pswd"
           placeholder="Lozinka"
-          required=""
+          required
         />
         <button @click.prevent="login">Login</button>
       </form>
@@ -53,6 +53,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import api from "@/services/api";
+
 export default {
 data() {
   return {
@@ -64,11 +67,43 @@ data() {
   };
 },
 methods: {
-  signup() {
-    console.log("Signup:", this.userName, this.email, this.password);
+  ...mapActions(["login"]),
+  async signup() {
+    try {
+      const response = await api.post("/auth/signup", {
+          name: this.userName,
+          email: this.email,
+          password: this.password,
+        });
+        console.log("Signup response: ", response);
+        alert("Signup successful! Please log in.");
+        this.userName = this.email = this.password = ""; 
+      } catch (error) {
+        console.error("Signup error:", error.response?.data || error);
+        alert("Signup failed. Please try again.");
+    }
   },
-  login() {
-    console.log("Login:", this.loginEmail, this.loginPassword);
+  async login() {
+    try {
+      const response = await api.post("/auth/login", {
+        email: this.loginEmail,
+        password: this.loginPassword,
+      });
+
+      if (response.data.token && response.data.user) {
+        console.log("Login API response: ", response);
+        this.$store.dispatch("login", {
+          token: response.data.token,
+          user: response.data.user,
+        });
+        console.log("Dispatched Vuex login action!");
+        if (this.$route.path !== "/") {
+          this.$router.push("/");
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error);
+    }
   },
 },
 };

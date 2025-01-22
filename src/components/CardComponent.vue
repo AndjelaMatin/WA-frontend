@@ -17,18 +17,60 @@
     <button class="recept-button" @click="$emit('open-recipe', recept._id)">
       Pogledaj recept
     </button>
+    <div v-if="showActions" class="action-buttons">
+      <button class="edit-button" @click="$emit('edit-recipe', recept._id)">Uredi</button>
+      <button class="delete-button" @click="$emit('delete-recipe', recept._id)">Obriši</button>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    recept: Object, 
+    recept: Object,
+    showActions: { 
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>
 
 <style scoped>
+.action-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.edit-button,
+.delete-button {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.edit-button:hover {
+  background-color: #e0a800;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
 .recept-card {
   width: 100%;
   max-width: 300px;
