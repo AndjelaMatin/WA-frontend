@@ -43,6 +43,12 @@ const routes = [
     component: () => import('../views/ShoppingLista.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/mojiRecepti',
+    name: 'mojiRecepti',
+    component: () => import('../views/MojiRecepti.vue'),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

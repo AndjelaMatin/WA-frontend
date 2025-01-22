@@ -39,6 +39,9 @@ const handleLogout = () => {
           <router-link class="nav-link" to="/noviRecept">Dodaj recept</router-link>
         </li>
         <li class="nav-item" v-if="isAuthenticated">
+          <router-link class="nav-link" to="/mojiRecepti">Moji recepti</router-link>
+        </li>
+        <li class="nav-item" v-if="isAuthenticated">
           <router-link class="nav-link" to="/shoppingLista">Shopping lista</router-link>
         </li>
         <li class="nav-item" v-if="isAuthenticated">
