@@ -186,41 +186,56 @@ export default {
 }
 
 .add-btn,
-.remove-btn,
 .submit-btn {
-  background-color: #007bff;
-  color: #fff;
+  background-color: #2a231f; /* Tamna smeđa */
+  color: #fff; /* Bijela boja za tekst */
   border: none;
-  border-radius: 6px;
-  padding: 10px 14px;
+  border-radius: 5px; /* Zaobljeni rubovi */
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Efekti na hover */
 }
 
 .add-btn:hover,
-.remove-btn:hover,
 .submit-btn:hover {
-  background-color: #0056b3;
+  background-color: #fbf5e5; /* Svjetlija pozadina */
+  color: #2a231f; /* Tamni tekst */
+  transform: scale(1.05); /* Blago povećanje */
 }
 
 .remove-btn {
-  background-color: #dc3545;
+  background-color: #dc3545; /* Crvena */
+  color: #fff; /* Bijeli tekst */
+  border: none;
+  border-radius: 5px; /* Zaobljeni rubovi */
+  padding: 5px 10px; /* Manji padding za manju veličinu */
+  font-size: 14px; /* Smanjena veličina fonta */
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .remove-btn:hover {
-  background-color: #a71d2a;
+  background-color: #a71d2a; /* Tamnija crvena za hover */
 }
 
 .submit-btn {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
-  background-color: #2a231f;
+  padding: 10px 20px;
+  background: #2a231f;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .submit-btn:hover {
-  background-color: #1a1815;
-}
+  background: #fbf5e5;
+  color: #2a231f;
+  }
 </style>
