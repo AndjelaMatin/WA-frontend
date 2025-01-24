@@ -49,6 +49,12 @@ const routes = [
     component: () => import('../views/MojiRecepti.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/uredirecept/:id',
+    name: 'urediRecept',
+    component: () => import('../views/UrediRecept.vue'),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

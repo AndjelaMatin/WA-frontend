@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3">
+    <div class="container mt-3">
       <h1 class="text-center mb-4">Moji recepti</h1>
       <div class="cards-container">
         <CardComponent
@@ -51,7 +51,6 @@
       this.$router.push({ name: "receptStranica", params: { id } });
     },
       editRecipe(id) {
-        // Navigacija na stranicu uređivanja
         this.$router.push({ name: "urediRecept", params: { id } });
       },
       async deleteRecipe(id) {

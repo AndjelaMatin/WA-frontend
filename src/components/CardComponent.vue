@@ -41,6 +41,7 @@ export default {
   margin-top: 15px;
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
 
 .edit-button,
@@ -51,24 +52,27 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .edit-button {
-  background-color: #ffc107;
-  color: #000;
+  background-color: #2a231f; 
+  color: #fff;
 }
 
 .edit-button:hover {
-  background-color: #e0a800;
+  background-color: #fbf5e5; 
+  color: #c97d60; 
 }
 
 .delete-button {
-  background-color: #dc3545;
+  background-color: #c94e50; 
   color: #fff;
 }
 
 .delete-button:hover {
-  background-color: #c82333;
+  background-color: #ff6b6b;
+  color: #fff;
 }
 
 .recept-card {

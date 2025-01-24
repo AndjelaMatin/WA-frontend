@@ -28,12 +28,13 @@
       </div>
 
       <div v-if="showComments" class="recept-komentari">
-        <ul>
-          <li v-for="komentar in recipe.komentari" :key="komentar.tekst">
-            {{ komentar.tekst }} - <strong>{{ komentar.korisnik }}</strong>
-          </li>
-        </ul>
-      </div>
+  <ul v-if="recipe.komentari.length > 0">
+    <li v-for="komentar in recipe.komentari" :key="komentar.tekst">
+      {{ komentar.tekst }} - <strong>{{ komentar.korisnik }}</strong>
+    </li>
+  </ul>
+  <p v-else class="no-comments">Nema komentara.</p>
+</div>
     </div>
     <div v-else class="recept-error">
       <p>Recept nije pronađen.</p>
@@ -47,8 +48,8 @@ import api from '@/services/api';
 export default {
   data() {
     return {
-      recipe: null, // Recept koji će se prikazati
-      showComments: false, // Kontrola prikaza komentara
+      recipe: null, 
+      showComments: false,
     };
   },
   async created() {
@@ -181,4 +182,11 @@ export default {
   font-size: 18px;
   color: #c94e50;
 }
+.no-comments {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 10px;
+}
+
 </style>
