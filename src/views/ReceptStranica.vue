@@ -25,16 +25,22 @@
         <button class="toggle-komentari" @click="toggleComments">
           {{ showComments ? "Sakrij komentare" : "Prikaži komentare" }}
         </button>
+        <button
+          class="favorite-button"
+          @click="toggleFavorite"
+        >
+          {{ isFavorite ? "Makni iz omiljenih" : "Dodaj u omiljene" }}
+        </button>
       </div>
 
       <div v-if="showComments" class="recept-komentari">
-  <ul v-if="recipe.komentari.length > 0">
-    <li v-for="komentar in recipe.komentari" :key="komentar.tekst">
-      {{ komentar.tekst }} - <strong>{{ komentar.korisnik }}</strong>
-    </li>
-  </ul>
-  <p v-else class="no-comments">Nema komentara.</p>
-</div>
+        <ul v-if="recipe.komentari.length > 0">
+          <li v-for="komentar in recipe.komentari" :key="komentar.tekst">
+            {{ komentar.tekst }} - <strong>{{ komentar.korisnik }}</strong>
+          </li>
+        </ul>
+        <p v-else class="no-comments">Nema komentara.</p>
+      </div>
     </div>
     <div v-else class="recept-error">
       <p>Recept nije pronađen.</p>
@@ -43,30 +49,60 @@
 </template>
 
 <script>
-import api from '@/services/api';
+import api from "@/services/api";
 
 export default {
   data() {
     return {
-      recipe: null, 
-      showComments: false,
+      recipe: null, // Podaci o receptu
+      showComments: false, // Kontrola prikaza komentara
+      isFavorite: false, // Provjera je li recept u omiljenima
     };
   },
   async created() {
     try {
-      const response = await api.get(`/recepti/${this.$route.params.id}`);
+      // Dohvati podatke o receptu, uključujući isFavorite
+      const response = await api.get(`/recepti/${this.$route.params.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       this.recipe = response.data;
+      this.isFavorite = response.data.isFavorite; // Postavi stanje na temelju backend odgovora
     } catch (error) {
-      console.error('Greška pri dohvaćanju recepta:', error);
+      console.error("Greška pri dohvaćanju podataka:", error);
     }
   },
   methods: {
     toggleComments() {
       this.showComments = !this.showComments; // Prebacivanje prikaza komentara
     },
+    async toggleFavorite() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (this.isFavorite) {
+          // Ukloni iz omiljenih
+          await api.delete(`/recepti/${this.recipe._id}/omiljeni`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          this.isFavorite = false; // Ažuriraj stanje
+          alert("Recept je uklonjen iz omiljenih.");
+        } else {
+          // Dodaj u omiljene
+          await api.post(`/recepti/${this.recipe._id}/omiljeni`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          this.isFavorite = true; // Ažuriraj stanje
+          alert("Recept je dodan u omiljene.");
+        }
+      } catch (error) {
+        console.error("Greška pri upravljanju omiljenima:", error);
+        alert("Došlo je do greške. Pokušajte ponovno.");
+      }
+    },
   },
 };
 </script>
+
 <style scoped>
 .recept-stranica {
   max-width: 700px;
@@ -130,13 +166,6 @@ export default {
   margin-bottom: 20px;
 }
 
-.recept-naziv {
-  font-size: 3rem; 
-  color: #2a231f;
-  margin-bottom: 30px; 
-  text-align: center;
-}
-
 .recept-interakcije p {
   font-size: 16px;
   margin-bottom: 10px;
@@ -159,6 +188,24 @@ export default {
   color: #2a231f;
 }
 
+.favorite-button {
+  padding: 10px 20px;
+  background: #c94e50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.favorite-button:hover {
+  background: #ff6b6b;
+  color: #fff;
+}
+
 .recept-komentari ul {
   list-style-type: none;
   padding: 0;
@@ -177,11 +224,6 @@ export default {
   background: #ffe9c6;
 }
 
-.recept-error {
-  text-align: center;
-  font-size: 18px;
-  color: #c94e50;
-}
 .no-comments {
   text-align: center;
   color: #888;
@@ -189,4 +231,9 @@ export default {
   margin-top: 10px;
 }
 
+.recept-error {
+  text-align: center;
+  font-size: 18px;
+  color: #c94e50;
+}
 </style>

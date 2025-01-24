@@ -44,15 +44,14 @@ export default {
   },
   data() {
     return {
-      recepti: [], // Svi recepti
-      searchResults: [], // Rezultati pretrage
-      searchQuery: "", // Korisnički unos za pretragu
-      isSearching: false, // Status pretraživanja
-      searchInitiated: false, // Je li pretraga pokrenuta
+      recepti: [],
+      searchResults: [], 
+      searchQuery: "",
+      isSearching: false, 
+      searchInitiated: false, 
     };
   },
   computed: {
-    // Ako je pretraga aktivna, prikazujemo rezultate pretrage; inače sve recepte
     prikazaniRecepti() {
       return this.searchQuery.trim() !== "" && this.searchResults.length > 0
         ? this.searchResults
@@ -61,7 +60,6 @@ export default {
   },
   async created() {
     try {
-      // Dohvaćanje svih recepata
       const response = await api.get("/recepti");
       this.recepti = response.data;
     } catch (error) {
@@ -69,16 +67,15 @@ export default {
     }
   },
   methods: {
-    // Funkcija za pretragu recepata
     async onSearch() {
       if (this.searchQuery.trim() === "") {
         this.searchResults = [];
-        this.searchInitiated = true; // Indikator da je pretraga pokrenuta
+        this.searchInitiated = true; 
         return;
       }
 
       this.isSearching = true;
-      this.searchInitiated = true; // Indikator da je pretraga pokrenuta
+      this.searchInitiated = true; 
       try {
         const response = await api.get("/recepti/pretraga", {
           params: { naziv: this.searchQuery },
@@ -88,16 +85,14 @@ export default {
         console.error("Greška pri pretrazi recepata:", error);
         this.searchResults = [];
       } finally {
-        this.isSearching = false; // Završetak pretraživanja
+        this.isSearching = false; 
       }
     },
-    // Resetiranje pretrage
     resetSearch() {
       this.searchQuery = "";
       this.searchResults = [];
-      this.searchInitiated = false; // Pretraga resetirana
+      this.searchInitiated = false; 
     },
-    // Navigacija na stranicu recepta
     openRecipe(id) {
       if (!id) {
         console.error("Recept ID nije definiran.");
@@ -110,61 +105,56 @@ export default {
 </script>
 
 <style scoped>
-/* Kontejner za pretragu */
 .search-container {
-  display: flex; /* Raspored u jednom redu */
-  align-items: center; /* Vertikalno poravnanje */
-  justify-content: center; /* Horizontalno poravnanje */
-  gap: 10px; /* Razmak između elemenata */
-  margin-bottom: 30px; /* Razmak ispod */
+  display: flex; 
+  align-items: center;
+  justify-content: center; 
+  gap: 10px; 
+  margin-bottom: 30px;
   text-align: center;
 }
 
-/* Polje za unos */
 .search-input {
-  flex: 1; /* Zauzima sav dostupan prostor */
-  max-width: 500px; /* Maksimalna širina */
+  flex: 1; 
+  max-width: 500px; 
   font-size: 1.25rem; 
   padding: 15px; 
   border: 1px solid #ccc;
-  border-radius: 8px; /* Zaobljeni rubovi */
+  border-radius: 8px; 
 }
 
-/* Stil gumbova */
 .search-buttons {
-  display: flex; /* Gumbi u istom redu */
-  gap: 10px; /* Razmak između gumbova */
+  display: flex; 
+  gap: 10px; 
 }
 
 .search-buttons .btn {
   padding: 10px 20px;
-  background-color: #2a231f; /* Tamno smeđa */
-  color: #fff; /* Bijeli tekst */
+  background-color: #2a231f; 
+  color: #fff; 
   border: none;
-  border-radius: 5px; /* Zaobljeni rubovi */
-  font-size: 1rem; /* Veličina fonta */
-  font-weight: bold; /* Podebljani tekst */
-  cursor: pointer; /* Promjena pokazivača */
-  transition: background 0.3s ease, transform 0.3s ease; /* Efekti na hover */
+  border-radius: 5px; 
+  font-size: 1rem; 
+  font-weight: bold; 
+  cursor: pointer; 
+  transition: background 0.3s ease, transform 0.3s ease; 
 }
 
-/* Hover efekt za gumbove */
 .search-buttons .btn:hover {
-  background-color: #fbf5e5; /* Svjetlija pozadina */
-  color: #2a231f; /* Tamni tekst */
-  transform: scale(1.05); /* Blago povećanje */
+  background-color: #fbf5e5; 
+  color: #2a231f; 
+  transform: scale(1.05); 
 }
 
-/* Klik efekt za gumbove */
 .search-buttons .btn:active {
-  transform: scale(0.95); /* Smanjenje veličine pri kliku */
+  transform: scale(0.95); 
 }
 
-/* Kontejner za kartice */
+
 .cards-container {
-  display: grid; /* Raspored u mreži */
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Prilagodljiva mreža */
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
   gap: 20px;
-  justify-items: center; /* Centriranje kartica */
+  justify-items: center; 
 }
 </style>

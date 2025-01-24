@@ -36,6 +36,7 @@ const routes = [
     name: 'receptStranica',
     component: () => import('../views/ReceptStranica.vue'),
     props:true,
+    meta: { requiresAuth: true },
   },
   {
     path: '/shoppingLista',
