@@ -6,12 +6,17 @@
     <p><strong>Porcije:</strong> {{ recept.porcije }}</p>
     <div class="recept-interakcije">
       <div class="like-container">
-        <img src="heart.png" height="25px" alt="sviđanje" />
-        <span>{{ recept.svidanja }}</span>
+        <button @click="$emit('toggle-like', recept._id)" class="recept-button1">
+          <img height="25px" :src="liked ? 'heartda.png' : 'heartne.png'" alt="Heart" />
+<span>{{ recept.svidanja }}</span>
+</button>
+        
       </div>
       <div class="komentar-container">
-        <img src="comment-dots.png" height="25px" alt="komentar" />
+        <button class="recept-button1">
+        <img src="commentne.png" height="25px" alt="komentar" />
         <span>{{ recept.komentari.length }}</span>
+      </button>
       </div>
     </div>
     <button class="recept-button" @click="$emit('open-recipe', recept._id)">
@@ -27,11 +32,21 @@
 <script>
 export default {
   props: {
-    recept: Object,
+    recept:{
+      type: Object,
+      required: true,
+    } ,
     showActions: { 
       type: Boolean,
       default: false,
     },
+    liked: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  mounted() {
+    console.log("Recept prop:", this.recept);
   },
 };
 </script>
@@ -136,7 +151,21 @@ export default {
   margin-top: 15px;
   transition: background 0.3s ease;
 }
-
+.recept-button1 {
+  padding: 10px 15px;
+  background: #fee6c1;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 15px;
+  transition: background 0.3s ease;
+}
+.recept-button1:hover {
+  background: #fbf5e5;
+  color: #c97d60;
+}
 .recept-button:hover {
   background: #fbf5e5;
   color: #c97d60;

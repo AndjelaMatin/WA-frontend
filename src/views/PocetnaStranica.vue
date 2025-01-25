@@ -28,6 +28,8 @@
         v-for="recept in prikazaniRecepti"
         :key="recept._id"
         :recept="recept"
+        :liked="lajkaniRecepti.includes(recept._id)"
+        @toggle-like="handleLike"
         @open-recipe="openRecipe"
       />
     </div>
@@ -49,6 +51,7 @@ export default {
       searchQuery: "",
       isSearching: false, 
       searchInitiated: false, 
+      lajkaniRecepti: [],
     };
   },
   computed: {
@@ -58,49 +61,106 @@ export default {
         : this.recepti;
     },
   },
-  async created() {
+  methods: {
+  async fetchRecepti() {
     try {
-      const response = await api.get("/recepti");
+      const response = await api.get('/recepti');
       this.recepti = response.data;
     } catch (error) {
-      console.error("Greška pri dohvaćanju recepata:", error);
+      console.error('Greška pri dohvaćanju recepata:', error);
     }
   },
-  methods: {
-    async onSearch() {
-      if (this.searchQuery.trim() === "") {
-        this.searchResults = [];
-        this.searchInitiated = true; 
-        return;
-      }
+  async handleLike(receptId) {
+  if (!receptId) {
+    console.error("Recept ID nije definisan.");
+    return;
+  }
 
-      this.isSearching = true;
-      this.searchInitiated = true; 
-      try {
-        const response = await api.get("/recepti/pretraga", {
-          params: { naziv: this.searchQuery },
-        });
-        this.searchResults = response.data;
-      } catch (error) {
-        console.error("Greška pri pretrazi recepata:", error);
-        this.searchResults = [];
-      } finally {
-        this.isSearching = false; 
-      }
-    },
-    resetSearch() {
-      this.searchQuery = "";
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Molimo prijavite se kako biste mogli lajkovati recepte.");
+    this.$router.push("/login");
+    return;
+  }
+
+  try {
+    const recept = this.recepti.find((r) => r._id === receptId);
+    if (!recept) {
+      console.error("Recept nije pronađen u lokalnoj listi.");
+      return;
+    }
+
+    if (this.lajkaniRecepti.includes(receptId)) {
+      await api.delete("/korisnici/lajk", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { receptId },
+      });
+      this.lajkaniRecepti = this.lajkaniRecepti.filter((id) => id !== receptId);
+      recept.svidanja--; 
+    } else {
+      await api.post("/korisnici/lajk", { receptId }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      this.lajkaniRecepti.push(receptId);
+      recept.svidanja++;
+    }
+  } catch (error) {
+    console.error("Greška pri upravljanju lajkovima:", error);
+    alert("Došlo je do greške prilikom lajkanja/uklanjanja lajka.");
+  }
+},
+  async onSearch() {
+    if (this.searchQuery.trim() === "") {
       this.searchResults = [];
-      this.searchInitiated = false; 
-    },
-    openRecipe(id) {
-      if (!id) {
-        console.error("Recept ID nije definiran.");
-        return;
-      }
-      this.$router.push({ name: "receptStranica", params: { id } });
-    },
+      this.searchInitiated = true; 
+      return;
+    }
+
+    this.isSearching = true;
+    this.searchInitiated = true; 
+    try {
+      const response = await api.get("/recepti/pretraga", {
+        params: { naziv: this.searchQuery },
+      });
+      this.searchResults = response.data;
+    } catch (error) {
+      console.error("Greška pri pretrazi recepata:", error);
+      this.searchResults = [];
+    } finally {
+      this.isSearching = false; 
+    }
   },
+  resetSearch() {
+    this.searchQuery = "";
+    this.searchResults = [];
+    this.searchInitiated = false; 
+  },
+  async fetchLajkaniRecepti() {
+  const token = localStorage.getItem("token");
+  if (!token) return; 
+
+  try {
+    const response = await api.get("/korisnici/lajkani", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.lajkaniRecepti = response.data; 
+    console.log("Lajkani recepti:", this.lajkaniRecepti);
+  } catch (error) {
+    console.error("Greška pri dohvaćanju lajkanih recepata:", error);
+  }
+},
+  openRecipe(id) {
+    if (!id) {
+      console.error("Recept ID nije definiran.");
+      return;
+    }
+    this.$router.push({ name: "receptStranica", params: { id } });
+  },
+},
+  mounted() {
+    this.fetchRecepti();
+    this.fetchLajkaniRecepti();
+  }
 };
 </script>
 

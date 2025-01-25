@@ -8,6 +8,8 @@
           :key="recept._id"
           :recept="recept"
           :showActions="false" 
+          :liked="lajkaniRecepti.includes(recept._id)"
+          @toggle-like="handleLike"
           @open-recipe="openRecipe"
         />
       </div>
@@ -25,6 +27,8 @@
           :key="recept._id"
           :recept="recept"
           :showActions="true" 
+          :liked="lajkaniRecepti.includes(recept._id)"
+                  @toggle-like="handleLike"
           @open-recipe="openRecipe"
           @edit-recipe="editRecipe"
           @delete-recipe="deleteRecipe"
@@ -47,30 +51,88 @@ export default {
   },
   data() {
     return {
-      userRecipes: [], // Korisnički recepti
-      favoriteRecipes: [], // Omiljeni recepti
+      userRecipes: [], 
+      favoriteRecipes: [], 
+      lajkaniRecepti: [],
     };
   },
   async created() {
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-      // Dohvati korisničke recepte
-      const userRecipesResponse = await api.get("/mojirecepti", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      this.userRecipes = userRecipesResponse.data;
+    const userRecipesResponse = await api.get("/mojirecepti", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.userRecipes = userRecipesResponse.data;
 
-      // Dohvati omiljene recepte
-      const favoriteRecipesResponse = await api.get("/omiljenirecepti", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      this.favoriteRecipes = favoriteRecipesResponse.data;
-    } catch (error) {
-      console.error("Greška pri dohvaćanju recepata:", error);
-    }
-  },
+    const favoriteRecipesResponse = await api.get("/omiljenirecepti", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.favoriteRecipes = favoriteRecipesResponse.data;
+
+    await this.fetchLajkaniRecepti();
+  } catch (error) {
+    console.error("Greška pri dohvaćanju recepata:", error);
+  }
+},
+
   methods: {
+    async handleLike(receptId) {
+  if (!receptId) {
+    console.error("Recept ID nije definisan.");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Molimo prijavite se kako biste mogli lajkovati recepte.");
+    this.$router.push("/login");
+    return;
+  }
+
+  try {
+    const recept =
+      this.userRecipes.find((r) => r._id === receptId) ||
+      this.favoriteRecipes.find((r) => r._id === receptId);
+
+    if (!recept) {
+      console.error("Recept nije pronađen u lokalnim listama.");
+      return;
+    }
+
+    if (this.lajkaniRecepti.includes(receptId)) {
+      await api.delete("/korisnici/lajk", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { receptId },
+      });
+      this.lajkaniRecepti = this.lajkaniRecepti.filter((id) => id !== receptId);
+      recept.svidanja--; 
+    } else {
+      await api.post("/korisnici/lajk", { receptId }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      this.lajkaniRecepti.push(receptId);
+      recept.svidanja++; 
+    }
+  } catch (error) {
+    console.error("Greška pri upravljanju lajkovima:", error);
+    alert("Došlo je do greške prilikom lajkanja/uklanjanja lajka.");
+  }
+},
+async fetchLajkaniRecepti() {
+  const token = localStorage.getItem("token");
+  if (!token) return; 
+
+  try {
+    const response = await api.get("/korisnici/lajkani", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.lajkaniRecepti = response.data; 
+    console.log("Lajkani recepti:", this.lajkaniRecepti);
+  } catch (error) {
+    console.error("Greška pri dohvaćanju lajkanih recepata:", error);
+  }
+},
     openRecipe(id) {
       if (!id) {
         console.error("Recept ID nije definiran.");
@@ -97,6 +159,9 @@ export default {
       }
     },
   },
+  mounted() {
+    this.fetchLajkaniRecepti();
+  }
 };
 </script>
 
