@@ -32,7 +32,7 @@
       </div>
     </div>
     <p v-if="userRecipes.length === 0" class="text-center text-muted">
-      Nemate nijedan recept. Dodajte novi recept kako bi se prikazao ovdje!
+      Nemate nijedan svoj recept. Dodajte novi recept kako bi se prikazao ovdje!
     </p>
   </div>
 </template>

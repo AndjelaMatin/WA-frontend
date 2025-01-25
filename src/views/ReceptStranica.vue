@@ -21,17 +21,26 @@
       </div>
 
       <div class="recept-interakcije">
-        <p><strong>Broj sviđanja:</strong> {{ recipe.svidanja }}</p>
-        <button class="toggle-komentari" @click="toggleComments">
-          {{ showComments ? "Sakrij komentare" : "Prikaži komentare" }}
-        </button>
-        <button
-          class="favorite-button"
-          @click="toggleFavorite"
-        >
-          {{ isFavorite ? "Makni iz omiljenih" : "Dodaj u omiljene" }}
-        </button>
-      </div>
+  <p><strong>Broj sviđanja:</strong> {{ recipe.svidanja }}</p>
+  <button class="toggle-komentari" @click="toggleComments">
+    {{ showComments ? "Sakrij komentare" : "Prikaži komentare" }}
+  </button>
+  <button
+    v-if="isFavorite"
+    class="favorite-button remove"
+    @click="toggleFavorite"
+  >
+    Makni iz omiljenih
+  </button>
+  <button
+    v-else
+    class="favorite-button add"
+    @click="toggleFavorite"
+  >
+    Dodaj u omiljene
+  </button>
+</div>
+
 
       <div v-if="showComments" class="recept-komentari">
         <ul v-if="recipe.komentari.length > 0">
@@ -76,29 +85,30 @@ export default {
       this.showComments = !this.showComments; // Prebacivanje prikaza komentara
     },
     async toggleFavorite() {
-      try {
-        const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-        if (this.isFavorite) {
-          // Ukloni iz omiljenih
-          await api.delete(`/recepti/${this.recipe._id}/omiljeni`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          this.isFavorite = false; // Ažuriraj stanje
-          alert("Recept je uklonjen iz omiljenih.");
-        } else {
-          // Dodaj u omiljene
-          await api.post(`/recepti/${this.recipe._id}/omiljeni`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          this.isFavorite = true; // Ažuriraj stanje
-          alert("Recept je dodan u omiljene.");
-        }
-      } catch (error) {
-        console.error("Greška pri upravljanju omiljenima:", error);
-        alert("Došlo je do greške. Pokušajte ponovno.");
-      }
-    },
+    if (this.isFavorite) {
+      // Ukloni iz omiljenih
+      await api.delete('/korisnici/omiljeni', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { receptId: this.recipe._id }, // Pošalji receptId kao parametar
+      });
+      this.isFavorite = false;
+      alert("Recept je uklonjen iz omiljenih.");
+    } else {
+      // Dodaj u omiljene
+      await api.post('/korisnici/omiljeni', { receptId: this.recipe._id }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      this.isFavorite = true;
+      alert("Recept je dodan u omiljene.");
+    }
+  } catch (error) {
+    console.error("Greška pri upravljanju omiljenima:", error);
+    alert("Došlo je do greške. Pokušajte ponovno.");
+  }
+},
   },
 };
 </script>
@@ -171,7 +181,7 @@ export default {
   margin-bottom: 10px;
 }
 
-.toggle-komentari {
+.toggle-komentari, .favorite-button.add {
   padding: 10px 20px;
   background: #2a231f;
   color: #fff;
@@ -183,14 +193,12 @@ export default {
   transition: background 0.3s ease;
 }
 
-.toggle-komentari:hover {
+.toggle-komentari:hover, .favorite-button.add:hover  {
   background: #fbf5e5;
   color: #2a231f;
 }
-
-.favorite-button {
+.favorite-button.remove {
   padding: 10px 20px;
-  background: #c94e50;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -198,12 +206,11 @@ export default {
   font-size: 14px;
   font-weight: bold;
   transition: background 0.3s ease;
-  margin-top: 10px;
+  background: #c94e50;
 }
 
-.favorite-button:hover {
+.favorite-button.remove:hover {
   background: #ff6b6b;
-  color: #fff;
 }
 
 .recept-komentari ul {
