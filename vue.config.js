@@ -2,7 +2,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // URL backend-a
+        target: 'https://wa-backend-he0u.onrender.com', // URL backend-a
         changeOrigin: true,
       },
     },
