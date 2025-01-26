@@ -36,6 +36,7 @@ const routes = [
     name: 'receptStranica',
     component: () => import('../views/ReceptStranica.vue'),
     props:true,
+    meta: { requiresAuth: true },
   },
   {
     path: '/shoppingLista',
@@ -47,6 +48,12 @@ const routes = [
     path: '/mojiRecepti',
     name: 'mojiRecepti',
     component: () => import('../views/MojiRecepti.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/uredirecept/:id',
+    name: 'urediRecept',
+    component: () => import('../views/UrediRecept.vue'),
     meta: { requiresAuth: true },
   },
 ];

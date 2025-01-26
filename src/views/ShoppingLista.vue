@@ -11,15 +11,15 @@
     <ul class="item-list">
       <li
         v-for="(item, index) in items"
-        :key="index"
+        :key="item.id"
         :class="{ completed: item.completed }"
       >
         <div class="item-content">
           <input
-  type="checkbox"
-  v-model="item.completed"
-  @change="updateItem(index)" />
-
+            type="checkbox"
+            v-model="item.completed"
+            @change="updateItem(item)"
+          />
           <span>{{ index + 1 }}. {{ item.name }}</span>
         </div>
       </li>
@@ -28,97 +28,101 @@
 </template>
 
 <script>
+import api from "@/services/api";
+
 export default {
   data() {
     return {
-      items: [], // Popunjeno iz baze
+      items: [], // Stavke iz baze
       newItem: "", // Nova stavka za unos
     };
   },
   methods: {
     // Dohvati sve stavke iz shopping liste
     async fetchItems() {
-      try {
-        const response = await fetch("/api/shoppingLista");
-        const data = await response.json();
-        this.items = data;
-      } catch (error) {
-        console.error("Greška prilikom dohvaćanja stavki:", error);
-      }
-    },
-    // Dodaj novu stavku u shopping listu
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await api.get("/shoppingLista", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    console.log("Dohvaćene stavke iz API-ja:", response.data);
+
+    if (Array.isArray(response.data)) {
+      this.items = response.data; // Postavi stavke ako je odgovor niz
+    } else {
+      console.error("Odgovor API-ja nije niz:", response.data);
+      this.items = []; // Postavi prazni niz kao fallback
+    }
+  } catch (error) {
+    console.error("Greška prilikom dohvaćanja stavki:", error);
+  }
+},
+    // Dodaj novu stavku
     async addItem() {
-      if (this.newItem.trim() !== "") {
-        const newItem = { name: this.newItem.trim(), completed: false };
-        try {
-          const response = await fetch("/api/shoppingLista", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newItem),
-          });
+  if (this.newItem.trim() !== "") {
+    const token = localStorage.getItem("token");
+    const newItem = { name: this.newItem.trim(), completed: false };
 
-          if (!response.ok) {
-            throw new Error("Greška prilikom dodavanja stavke.");
-          }
+    try {
+      const response = await api.post("/shoppingLista", newItem, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-          this.items.push(newItem); // Dodaj novu stavku u lokalnu listu
-          this.newItem = ""; // Resetiraj input polje
-        } catch (error) {
-          console.error("Greška prilikom dodavanja stavke:", error);
+      if (response.data && response.data.item) {
+        if (Array.isArray(this.items)) {
+          this.items.push(response.data.item); // Dodaj novu stavku u niz
+        } else {
+          console.error("this.items nije niz:", this.items);
+          this.items = [response.data.item]; // Inicijaliziraj kao niz s novom stavkom
         }
+      } else {
+        console.error("Odgovor API-ja ne sadrži novu stavku:", response.data);
+      }
+
+      this.newItem = ""; // Resetiraj input polje
+    } catch (error) {
+      console.error("Greška prilikom dodavanja stavke:", error);
+    }
+  }
+},
+    // Ažuriraj status stavke
+    async updateItem(item) {
+      const token = localStorage.getItem("token");
+
+      try {
+        await api.put(`/shoppingLista/${item.id}`, { completed: item.completed }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        console.error("Greška prilikom ažuriranja stavke:", error);
       }
     },
     // Obriši označene stavke
     async removeSelectedItems() {
-      try {
-        const completedItems = this.items.filter((item) => item.completed); // eslint-disable-line no-unused-vars
-        const remainingItems = this.items.filter((item) => !item.completed);
+  const token = localStorage.getItem("token");
 
-        // Ažuriraj bazu s preostalim stavkama
-        const response = await fetch("/api/shoppingLista", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ items: remainingItems }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Greška prilikom brisanja označenih stavki.");
-        }
-
-        // Ažuriraj lokalnu listu
-        this.items = remainingItems;
-      } catch (error) {
-        console.error("Greška prilikom brisanja označenih stavki:", error);
-      }
-    },
-    async updateItem(index) {
-  const item = this.items[index]; // Dohvati stavku prema indeksu
   try {
-    const response = await fetch(`/api/shoppingLista/${index}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item), // Pošalji ažurirani objekt stavke
+    // Pošalji zahtjev za brisanje označenih stavki
+    await api.delete("/shoppingLista/completed", {
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!response.ok) {
-      throw new Error("Greška prilikom ažuriranja stavke.");
-    }
+    // Ukloni označene stavke iz lokalne liste
+    this.items = this.items.filter((item) => !item.completed);
   } catch (error) {
-    console.error("Greška prilikom ažuriranja stavke:", error);
+    console.error("Greška prilikom brisanja označenih stavki:", error);
   }
 },
   },
-  mounted() {
-    this.fetchItems(); // Dohvati stavke iz baze pri učitavanju
+  async created() {
+    // Dohvati stavke prilikom učitavanja komponente
+    await this.fetchItems();
   },
 };
 </script>
+
 <style scoped>
 .container {
   max-width: 700px;

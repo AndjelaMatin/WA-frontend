@@ -28,7 +28,11 @@
         v-for="recept in prikazaniRecepti"
         :key="recept._id"
         :recept="recept"
+        :liked="lajkaniRecepti.includes(recept._id)"
+        :commented="komentiraniRecepti.includes(recept._id)" 
+        @toggle-like="handleLike"
         @open-recipe="openRecipe"
+         @add-comment="handleComment"
       />
     </div>
   </div>
@@ -44,127 +48,244 @@ export default {
   },
   data() {
     return {
-      recepti: [], // Svi recepti
-      searchResults: [], // Rezultati pretrage
-      searchQuery: "", // Korisnički unos za pretragu
-      isSearching: false, // Status pretraživanja
-      searchInitiated: false, // Je li pretraga pokrenuta
+      recepti: [],
+      searchResults: [], 
+      searchQuery: "",
+      isSearching: false, 
+      searchInitiated: false, 
+      lajkaniRecepti: [],
+      komentiraniRecepti: [],
+      korisnikId: localStorage.getItem("korisnikId") || null,
     };
   },
   computed: {
-    // Ako je pretraga aktivna, prikazujemo rezultate pretrage; inače sve recepte
     prikazaniRecepti() {
-      return this.searchQuery.trim() !== "" && this.searchResults.length > 0
-        ? this.searchResults
-        : this.recepti;
-    },
+    const receptiZaPrikaz = this.searchQuery.trim() !== "" && this.searchResults.length > 0
+      ? this.searchResults
+      : this.recepti;
+
+    return receptiZaPrikaz.sort((a, b) => b.svidanja - a.svidanja);
   },
-  async created() {
-    try {
-      // Dohvaćanje svih recepata
-      const response = await api.get("/recepti");
-      this.recepti = response.data;
-    } catch (error) {
-      console.error("Greška pri dohvaćanju recepata:", error);
-    }
   },
   methods: {
-    // Funkcija za pretragu recepata
-    async onSearch() {
-      if (this.searchQuery.trim() === "") {
-        this.searchResults = [];
-        this.searchInitiated = true; // Indikator da je pretraga pokrenuta
-        return;
-      }
-
-      this.isSearching = true;
-      this.searchInitiated = true; // Indikator da je pretraga pokrenuta
-      try {
-        const response = await api.get("/recepti/pretraga", {
-          params: { naziv: this.searchQuery },
-        });
-        this.searchResults = response.data;
-      } catch (error) {
-        console.error("Greška pri pretrazi recepata:", error);
-        this.searchResults = [];
-      } finally {
-        this.isSearching = false; // Završetak pretraživanja
-      }
-    },
-    // Resetiranje pretrage
-    resetSearch() {
-      this.searchQuery = "";
-      this.searchResults = [];
-      this.searchInitiated = false; // Pretraga resetirana
-    },
-    // Navigacija na stranicu recepta
-    openRecipe(id) {
-      if (!id) {
-        console.error("Recept ID nije definiran.");
-        return;
-      }
-      this.$router.push({ name: "receptStranica", params: { id } });
-    },
+  async fetchRecepti() {
+    try {
+      const response = await api.get('/recepti');
+      this.recepti = response.data.sort((a, b) => b.svidanja - a.svidanja); // Sortiranje po lajkovima
+    } catch (error) {
+      console.error('Greška pri dohvaćanju recepata:', error);
+    }
   },
+  async fetchKomentari(receptId) {
+  try {
+    const response = await api.get(`/recepti/${receptId}/komentari`);
+    const recept = this.recepti.find(r => r._id === receptId);
+    if (recept) {
+      recept.komentari = response.data; // Postavi komentare u odabrani recept
+    }
+  } catch (error) {
+    console.error("Greška pri dohvaćanju komentara:", error);
+  }
+},
+async fetchKomentiraniRecepti() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const response = await api.get("/korisnici/komentirani", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.komentiraniRecepti = response.data; // Sprema ID-ove komentiranih recepata
+  } catch (error) {
+    console.error("Greška pri dohvaćanju komentiranih recepata:", error);
+  }
+},
+  async handleLike(receptId) {
+  if (!receptId) {
+    console.error("Recept ID nije definisan.");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Molimo prijavite se kako biste mogli lajkovati recepte.");
+    this.$router.push("/login");
+    return;
+  }
+
+  try {
+    const recept = this.recepti.find((r) => r._id === receptId);
+    if (!recept) {
+      console.error("Recept nije pronađen u lokalnoj listi.");
+      return;
+    }
+
+    if (this.lajkaniRecepti.includes(receptId)) {
+      await api.delete("/korisnici/lajk", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { receptId },
+      });
+      this.lajkaniRecepti = this.lajkaniRecepti.filter((id) => id !== receptId);
+      recept.svidanja--; 
+    } else {
+      await api.post("/korisnici/lajk", { receptId }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      this.lajkaniRecepti.push(receptId);
+      recept.svidanja++;
+    }
+  } catch (error) {
+    console.error("Greška pri upravljanju lajkovima:", error);
+    alert("Došlo je do greške prilikom lajkanja/uklanjanja lajka.");
+  }
+},async handleComment(receptId, tekstKomentara) {
+  if (!receptId) {
+    console.error("Recept ID nije definisan.");
+    return;
+  }
+
+  if (!tekstKomentara || tekstKomentara.trim() === "") {
+    alert("Komentar ne može biti prazan.");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Molimo prijavite se kako biste mogli komentirati recepte.");
+    this.$router.push("/login");
+    return;
+  }
+
+  try {
+    const recept = this.recepti.find((r) => r._id === receptId);
+    if (!recept) {
+      console.error("Recept nije pronađen u lokalnoj listi.");
+      return;
+    }
+
+    const response = await api.post(`/recepti/${receptId}/komentari`, 
+      { tekst: tekstKomentara },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    recept.komentari.push(response.data); // Dodaj komentar u lokalni recept
+
+    // Dodaj recept u komentirane recepte ako nije već tamo
+    if (!this.komentiraniRecepti.includes(receptId)) {
+      this.komentiraniRecepti.push(receptId);
+    }
+  } catch (error) {
+    console.error("Greška pri dodavanju komentara:", error);
+    alert("Došlo je do greške prilikom dodavanja komentara.");
+  }
+},
+  async onSearch() {
+    if (this.searchQuery.trim() === "") {
+      this.searchResults = [];
+      this.searchInitiated = true; 
+      return;
+    }
+
+    this.isSearching = true;
+    this.searchInitiated = true; 
+    try {
+      const response = await api.get("/recepti/pretraga", {
+        params: { naziv: this.searchQuery },
+      });
+      this.searchResults = response.data.sort((a, b) => b.svidanja - a.svidanja); // Sortira rezultate pretrage
+    } catch (error) {
+      console.error("Greška pri pretrazi recepata:", error);
+      this.searchResults = [];
+    } finally {
+      this.isSearching = false; 
+    }
+  },
+  resetSearch() {
+    this.searchQuery = "";
+    this.searchResults = [];
+    this.searchInitiated = false; 
+  },
+  async fetchLajkaniRecepti() {
+  const token = localStorage.getItem("token");
+  if (!token) return; 
+
+  try {
+    const response = await api.get("/korisnici/lajkani", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.lajkaniRecepti = response.data; 
+    console.log("Lajkani recepti:", this.lajkaniRecepti);
+  } catch (error) {
+    console.error("Greška pri dohvaćanju lajkanih recepata:", error);
+  }
+},
+  openRecipe(id) {
+    if (!id) {
+      console.error("Recept ID nije definiran.");
+      return;
+    }
+    this.$router.push({ name: "receptStranica", params: { id } });
+  },
+},
+  mounted() {
+    this.fetchRecepti();
+    this.fetchLajkaniRecepti();
+    this.fetchKomentiraniRecepti(); 
+  }
 };
 </script>
 
 <style scoped>
-/* Kontejner za pretragu */
 .search-container {
-  display: flex; /* Raspored u jednom redu */
-  align-items: center; /* Vertikalno poravnanje */
-  justify-content: center; /* Horizontalno poravnanje */
-  gap: 10px; /* Razmak između elemenata */
-  margin-bottom: 30px; /* Razmak ispod */
+  display: flex; 
+  align-items: center;
+  justify-content: center; 
+  gap: 10px; 
+  margin-bottom: 30px;
   text-align: center;
 }
 
-/* Polje za unos */
 .search-input {
-  flex: 1; /* Zauzima sav dostupan prostor */
-  max-width: 500px; /* Maksimalna širina */
+  flex: 1; 
+  max-width: 500px; 
   font-size: 1.25rem; 
   padding: 15px; 
   border: 1px solid #ccc;
-  border-radius: 8px; /* Zaobljeni rubovi */
+  border-radius: 8px; 
 }
 
-/* Stil gumbova */
 .search-buttons {
-  display: flex; /* Gumbi u istom redu */
-  gap: 10px; /* Razmak između gumbova */
+  display: flex; 
+  gap: 10px; 
 }
 
 .search-buttons .btn {
   padding: 10px 20px;
-  background-color: #2a231f; /* Tamno smeđa */
-  color: #fff; /* Bijeli tekst */
+  background-color: #2a231f; 
+  color: #fff; 
   border: none;
-  border-radius: 5px; /* Zaobljeni rubovi */
-  font-size: 1rem; /* Veličina fonta */
-  font-weight: bold; /* Podebljani tekst */
-  cursor: pointer; /* Promjena pokazivača */
-  transition: background 0.3s ease, transform 0.3s ease; /* Efekti na hover */
+  border-radius: 5px; 
+  font-size: 1rem; 
+  font-weight: bold; 
+  cursor: pointer; 
+  transition: background 0.3s ease, transform 0.3s ease; 
 }
 
-/* Hover efekt za gumbove */
 .search-buttons .btn:hover {
-  background-color: #fbf5e5; /* Svjetlija pozadina */
-  color: #2a231f; /* Tamni tekst */
-  transform: scale(1.05); /* Blago povećanje */
+  background-color: #fbf5e5; 
+  color: #2a231f; 
+  transform: scale(1.05); 
 }
 
-/* Klik efekt za gumbove */
 .search-buttons .btn:active {
-  transform: scale(0.95); /* Smanjenje veličine pri kliku */
+  transform: scale(0.95); 
 }
 
-/* Kontejner za kartice */
+
 .cards-container {
-  display: grid; /* Raspored u mreži */
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Prilagodljiva mreža */
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
   gap: 20px;
-  justify-items: center; /* Centriranje kartica */
+  justify-items: center; 
 }
 </style>
