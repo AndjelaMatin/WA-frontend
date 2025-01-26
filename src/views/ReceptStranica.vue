@@ -41,15 +41,24 @@
   </button>
 </div>
 
+<div v-if="showComments" class="recept-komentari">
+  <ul v-if="recipe.komentari.length > 0">
+    <li v-for="komentar in recipe.komentari" :key="komentar.datum">
+      {{ komentar.tekst }} - <strong>{{ komentar.korisnik }}</strong>
+    </li>
+  </ul>
+  <p v-else class="no-comments">Nema komentara.</p>
 
-      <div v-if="showComments" class="recept-komentari">
-        <ul v-if="recipe.komentari.length > 0">
-          <li v-for="komentar in recipe.komentari" :key="komentar.tekst">
-            {{ komentar.tekst }} - <strong>{{ komentar.korisnik }}</strong>
-          </li>
-        </ul>
-        <p v-else class="no-comments">Nema komentara.</p>
-      </div>
+  <div class="dodaj-komentar">
+    <textarea
+      v-model="newComment"
+      placeholder="Dodajte komentar..."
+      class="comment-input"
+    ></textarea>
+    <button @click="addComment" class="comment-button">Dodaj komentar</button>
+  </div>
+</div>
+
     </div>
     <div v-else class="recept-error">
       <p>Recept nije pronađen.</p>
@@ -63,41 +72,40 @@ import api from "@/services/api";
 export default {
   data() {
     return {
-      recipe: null, // Podaci o receptu
-      showComments: false, // Kontrola prikaza komentara
-      isFavorite: false, // Provjera je li recept u omiljenima
+      recipe: null, 
+      showComments: false, 
+      isFavorite: false, 
+      newComment: "", 
+
     };
   },
   async created() {
     try {
-      // Dohvati podatke o receptu, uključujući isFavorite
       const response = await api.get(`/recepti/${this.$route.params.id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       this.recipe = response.data;
-      this.isFavorite = response.data.isFavorite; // Postavi stanje na temelju backend odgovora
+      this.isFavorite = response.data.isFavorite; 
     } catch (error) {
       console.error("Greška pri dohvaćanju podataka:", error);
     }
   },
   methods: {
     toggleComments() {
-      this.showComments = !this.showComments; // Prebacivanje prikaza komentara
+      this.showComments = !this.showComments; 
     },
     async toggleFavorite() {
   try {
     const token = localStorage.getItem("token");
 
     if (this.isFavorite) {
-      // Ukloni iz omiljenih
       await api.delete('/korisnici/omiljeni', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { receptId: this.recipe._id }, // Pošalji receptId kao parametar
+        params: { receptId: this.recipe._id }, 
       });
       this.isFavorite = false;
       alert("Recept je uklonjen iz omiljenih.");
     } else {
-      // Dodaj u omiljene
       await api.post('/korisnici/omiljeni', { receptId: this.recipe._id }, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -109,11 +117,73 @@ export default {
     alert("Došlo je do greške. Pokušajte ponovno.");
   }
 },
+async addComment() {
+    if (!this.newComment.trim()) {
+      alert("Komentar ne može biti prazan.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Molimo prijavite se kako biste dodali komentar.");
+        this.$router.push("/login");
+        return;
+      }
+
+      const response = await api.post(
+        `/recepti/${this.recipe._id}/komentari`,
+        { tekst: this.newComment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      this.recipe.komentari.push(response.data);
+
+      this.newComment = "";
+    } catch (error) {
+      console.error("Greška pri dodavanju komentara:", error);
+      alert("Došlo je do greške prilikom dodavanja komentara.");
+    }
+  },
   },
 };
 </script>
 
 <style scoped>
+
+.dodaj-komentar {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.comment-input {
+  width: 100%;
+  height: 80px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.comment-button {
+  padding: 10px 20px;
+  background-color: #2a231f;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.comment-button:hover {
+  background-color: #fbf5e5;
+  color: #2a231f;
+  transform: scale(1.05);
+}
+
 .recept-stranica {
   max-width: 700px;
   margin: 20px auto;

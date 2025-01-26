@@ -29,8 +29,10 @@
         :key="recept._id"
         :recept="recept"
         :liked="lajkaniRecepti.includes(recept._id)"
+        :commented="komentiraniRecepti.includes(recept._id)" 
         @toggle-like="handleLike"
         @open-recipe="openRecipe"
+         @add-comment="handleComment"
       />
     </div>
   </div>
@@ -52,6 +54,8 @@ export default {
       isSearching: false, 
       searchInitiated: false, 
       lajkaniRecepti: [],
+      komentiraniRecepti: [],
+      korisnikId: localStorage.getItem("korisnikId") || null,
     };
   },
   computed: {
@@ -70,6 +74,21 @@ export default {
       console.error('Greška pri dohvaćanju recepata:', error);
     }
   },
+  async fetchKomentiraniRecepti() {
+  const token = localStorage.getItem("token");
+  if (!token) return; // Ako korisnik nije prijavljen, nema komentiranih recepata
+
+  try {
+    const response = await api.get("/korisnici/komentirani", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    this.komentiraniRecepti = response.data; // Pohranjujemo komentirane recepte
+    console.log("Komentirani recepti:", this.komentiraniRecepti);
+  } catch (error) {
+    console.error("Greška pri dohvaćanju komentiranih recepata:", error);
+  }
+},
+
   async handleLike(receptId) {
   if (!receptId) {
     console.error("Recept ID nije definisan.");
@@ -109,6 +128,48 @@ export default {
     alert("Došlo je do greške prilikom lajkanja/uklanjanja lajka.");
   }
 },
+async handleComment(receptId, tekstKomentara) {
+      if (!receptId) {
+        console.error("Recept ID nije definisan.");
+        return;
+      }
+
+      if (!tekstKomentara || tekstKomentara.trim() === "") {
+        alert("Komentar ne može biti prazan.");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Molimo prijavite se kako biste mogli komentirati recepte.");
+        this.$router.push("/login");
+        return;
+      }
+
+      try {
+        const recept = this.recepti.find((r) => r._id === receptId);
+        if (!recept) {
+          console.error("Recept nije pronađen u lokalnoj listi.");
+          return;
+        }
+
+        const response = await api.post(`/recepti/${receptId}/komentari`, 
+          { tekst: tekstKomentara },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        recept.komentari.push(response.data); // Dodavanje novog komentara lokalno
+        console.log("Komentar dodat:", response.data);
+
+        // Dodaj u komentirane recepte ako nije već tamo
+        if (!this.komentiraniRecepti.includes(receptId)) {
+          this.komentiraniRecepti.push(receptId);
+        }
+      } catch (error) {
+        console.error("Greška pri dodavanju komentara:", error);
+        alert("Došlo je do greške prilikom dodavanja komentara.");
+      }
+    },
   async onSearch() {
     if (this.searchQuery.trim() === "") {
       this.searchResults = [];
@@ -160,6 +221,7 @@ export default {
   mounted() {
     this.fetchRecepti();
     this.fetchLajkaniRecepti();
+    this.fetchKomentiraniRecepti(); 
   }
 };
 </script>
