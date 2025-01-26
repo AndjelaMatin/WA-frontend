@@ -35,7 +35,7 @@
       <ul v-if="recept.komentari.length > 0" class="comments-list">
         <li v-for="komentar in recept.komentari" :key="komentar.datum" class="comment-item">
           <p class="comment-text">{{ komentar.tekst }}</p>
-          <p class="comment-author"><strong>{{ komentar.korisnik }}</strong></p>
+          <p class="comment-author"><strong>{{ komentar.korisnikIme }}</strong></p>
         </li>
       </ul>
       <p v-else class="no-comments">Nema komentara.</p>

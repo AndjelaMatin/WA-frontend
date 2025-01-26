@@ -60,35 +60,46 @@ export default {
   },
   computed: {
     prikazaniRecepti() {
-      return this.searchQuery.trim() !== "" && this.searchResults.length > 0
-        ? this.searchResults
-        : this.recepti;
-    },
+    const receptiZaPrikaz = this.searchQuery.trim() !== "" && this.searchResults.length > 0
+      ? this.searchResults
+      : this.recepti;
+
+    return receptiZaPrikaz.sort((a, b) => b.svidanja - a.svidanja);
+  },
   },
   methods: {
   async fetchRecepti() {
     try {
       const response = await api.get('/recepti');
-      this.recepti = response.data;
+      this.recepti = response.data.sort((a, b) => b.svidanja - a.svidanja); // Sortiranje po lajkovima
     } catch (error) {
       console.error('Greška pri dohvaćanju recepata:', error);
     }
   },
-  async fetchKomentiraniRecepti() {
+  async fetchKomentari(receptId) {
+  try {
+    const response = await api.get(`/recepti/${receptId}/komentari`);
+    const recept = this.recepti.find(r => r._id === receptId);
+    if (recept) {
+      recept.komentari = response.data; // Postavi komentare u odabrani recept
+    }
+  } catch (error) {
+    console.error("Greška pri dohvaćanju komentara:", error);
+  }
+},
+async fetchKomentiraniRecepti() {
   const token = localStorage.getItem("token");
-  if (!token) return; // Ako korisnik nije prijavljen, nema komentiranih recepata
+  if (!token) return;
 
   try {
     const response = await api.get("/korisnici/komentirani", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    this.komentiraniRecepti = response.data; // Pohranjujemo komentirane recepte
-    console.log("Komentirani recepti:", this.komentiraniRecepti);
+    this.komentiraniRecepti = response.data; // Sprema ID-ove komentiranih recepata
   } catch (error) {
     console.error("Greška pri dohvaćanju komentiranih recepata:", error);
   }
 },
-
   async handleLike(receptId) {
   if (!receptId) {
     console.error("Recept ID nije definisan.");
@@ -127,49 +138,47 @@ export default {
     console.error("Greška pri upravljanju lajkovima:", error);
     alert("Došlo je do greške prilikom lajkanja/uklanjanja lajka.");
   }
+},async handleComment(receptId, tekstKomentara) {
+  if (!receptId) {
+    console.error("Recept ID nije definisan.");
+    return;
+  }
+
+  if (!tekstKomentara || tekstKomentara.trim() === "") {
+    alert("Komentar ne može biti prazan.");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Molimo prijavite se kako biste mogli komentirati recepte.");
+    this.$router.push("/login");
+    return;
+  }
+
+  try {
+    const recept = this.recepti.find((r) => r._id === receptId);
+    if (!recept) {
+      console.error("Recept nije pronađen u lokalnoj listi.");
+      return;
+    }
+
+    const response = await api.post(`/recepti/${receptId}/komentari`, 
+      { tekst: tekstKomentara },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    recept.komentari.push(response.data); // Dodaj komentar u lokalni recept
+
+    // Dodaj recept u komentirane recepte ako nije već tamo
+    if (!this.komentiraniRecepti.includes(receptId)) {
+      this.komentiraniRecepti.push(receptId);
+    }
+  } catch (error) {
+    console.error("Greška pri dodavanju komentara:", error);
+    alert("Došlo je do greške prilikom dodavanja komentara.");
+  }
 },
-async handleComment(receptId, tekstKomentara) {
-      if (!receptId) {
-        console.error("Recept ID nije definisan.");
-        return;
-      }
-
-      if (!tekstKomentara || tekstKomentara.trim() === "") {
-        alert("Komentar ne može biti prazan.");
-        return;
-      }
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Molimo prijavite se kako biste mogli komentirati recepte.");
-        this.$router.push("/login");
-        return;
-      }
-
-      try {
-        const recept = this.recepti.find((r) => r._id === receptId);
-        if (!recept) {
-          console.error("Recept nije pronađen u lokalnoj listi.");
-          return;
-        }
-
-        const response = await api.post(`/recepti/${receptId}/komentari`, 
-          { tekst: tekstKomentara },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        recept.komentari.push(response.data); // Dodavanje novog komentara lokalno
-        console.log("Komentar dodat:", response.data);
-
-        // Dodaj u komentirane recepte ako nije već tamo
-        if (!this.komentiraniRecepti.includes(receptId)) {
-          this.komentiraniRecepti.push(receptId);
-        }
-      } catch (error) {
-        console.error("Greška pri dodavanju komentara:", error);
-        alert("Došlo je do greške prilikom dodavanja komentara.");
-      }
-    },
   async onSearch() {
     if (this.searchQuery.trim() === "") {
       this.searchResults = [];
@@ -183,7 +192,7 @@ async handleComment(receptId, tekstKomentara) {
       const response = await api.get("/recepti/pretraga", {
         params: { naziv: this.searchQuery },
       });
-      this.searchResults = response.data;
+      this.searchResults = response.data.sort((a, b) => b.svidanja - a.svidanja); // Sortira rezultate pretrage
     } catch (error) {
       console.error("Greška pri pretrazi recepata:", error);
       this.searchResults = [];

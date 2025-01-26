@@ -40,18 +40,25 @@ export default {
   methods: {
     // Dohvati sve stavke iz shopping liste
     async fetchItems() {
-      const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-      try {
-        const response = await api.get("/shoppingLista", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  try {
+    const response = await api.get("/shoppingLista", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-        this.items = response.data;
-      } catch (error) {
-        console.error("Greška prilikom dohvaćanja stavki:", error);
-      }
-    },
+    console.log("Dohvaćene stavke iz API-ja:", response.data);
+
+    if (Array.isArray(response.data)) {
+      this.items = response.data; // Postavi stavke ako je odgovor niz
+    } else {
+      console.error("Odgovor API-ja nije niz:", response.data);
+      this.items = []; // Postavi prazni niz kao fallback
+    }
+  } catch (error) {
+    console.error("Greška prilikom dohvaćanja stavki:", error);
+  }
+},
     // Dodaj novu stavku
     async addItem() {
   if (this.newItem.trim() !== "") {
@@ -63,9 +70,13 @@ export default {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Dodaj novu stavku u lokalnu listu
       if (response.data && response.data.item) {
-        this.items.push(response.data.item); // Dodaj novu stavku u niz
+        if (Array.isArray(this.items)) {
+          this.items.push(response.data.item); // Dodaj novu stavku u niz
+        } else {
+          console.error("this.items nije niz:", this.items);
+          this.items = [response.data.item]; // Inicijaliziraj kao niz s novom stavkom
+        }
       } else {
         console.error("Odgovor API-ja ne sadrži novu stavku:", response.data);
       }

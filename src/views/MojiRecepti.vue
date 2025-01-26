@@ -101,7 +101,6 @@ export default {
   }
 
   try {
-    // Pronađi recept u lokalnim podacima
     const recept =
       this.userRecipes.find((r) => r._id === receptId) ||
       this.favoriteRecipes.find((r) => r._id === receptId);
@@ -111,17 +110,14 @@ export default {
       return;
     }
 
-    // Dodaj komentar putem API-ja
     const response = await api.post(
       `/recepti/${receptId}/komentari`,
       { tekst: tekstKomentara },
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    // Dodaj novi komentar lokalno
     recept.komentari.push(response.data);
 
-    // Dodaj recept u komentirane ako nije već tamo
     if (!this.komentiraniRecepti.includes(receptId)) {
       this.komentiraniRecepti.push(receptId);
     }
@@ -238,7 +234,6 @@ async fetchLajkaniRecepti() {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #fbf5e5;
   border-radius: 10px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
