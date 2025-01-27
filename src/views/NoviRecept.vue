@@ -94,7 +94,7 @@ export default {
 
     const token = localStorage.getItem('token'); 
 
-    const response = await fetch(`${process.env.VUE_APP_API_URL}/api/recepti`, {
+    const response = await fetch(`${process.env.VUE_APP_API_URL}/recepti`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
