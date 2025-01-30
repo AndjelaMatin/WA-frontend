@@ -71,7 +71,7 @@ export default {
   async fetchRecepti() {
     try {
       const response = await api.get('/recepti');
-      this.recepti = response.data.sort((a, b) => b.svidanja - a.svidanja); // Sortiranje po lajkovima
+      this.recepti = response.data.sort((a, b) => b.svidanja - a.svidanja); 
     } catch (error) {
       console.error('Greška pri dohvaćanju recepata:', error);
     }
@@ -81,7 +81,7 @@ export default {
     const response = await api.get(`/recepti/${receptId}/komentari`);
     const recept = this.recepti.find(r => r._id === receptId);
     if (recept) {
-      recept.komentari = response.data; // Postavi komentare u odabrani recept
+      recept.komentari = response.data; 
     }
   } catch (error) {
     console.error("Greška pri dohvaćanju komentara:", error);
@@ -95,7 +95,7 @@ async fetchKomentiraniRecepti() {
     const response = await api.get("/korisnici/komentirani", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    this.komentiraniRecepti = response.data; // Sprema ID-ove komentiranih recepata
+    this.komentiraniRecepti = response.data; 
   } catch (error) {
     console.error("Greška pri dohvaćanju komentiranih recepata:", error);
   }
@@ -168,9 +168,8 @@ async fetchKomentiraniRecepti() {
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    recept.komentari.push(response.data); // Dodaj komentar u lokalni recept
+    recept.komentari.push(response.data); 
 
-    // Dodaj recept u komentirane recepte ako nije već tamo
     if (!this.komentiraniRecepti.includes(receptId)) {
       this.komentiraniRecepti.push(receptId);
     }
@@ -192,7 +191,7 @@ async fetchKomentiraniRecepti() {
       const response = await api.get("/recepti/pretraga", {
         params: { naziv: this.searchQuery },
       });
-      this.searchResults = response.data.sort((a, b) => b.svidanja - a.svidanja); // Sortira rezultate pretrage
+      this.searchResults = response.data.sort((a, b) => b.svidanja - a.svidanja); 
     } catch (error) {
       console.error("Greška pri pretrazi recepata:", error);
       this.searchResults = [];
