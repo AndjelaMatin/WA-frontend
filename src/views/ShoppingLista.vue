@@ -33,12 +33,11 @@ import api from "@/services/api";
 export default {
   data() {
     return {
-      items: [], // Stavke iz baze
-      newItem: "", // Nova stavka za unos
+      items: [], 
+      newItem: "", 
     };
   },
   methods: {
-    // Dohvati sve stavke iz shopping liste
     async fetchItems() {
   const token = localStorage.getItem("token");
 
@@ -50,16 +49,15 @@ export default {
     console.log("Dohvaćene stavke iz API-ja:", response.data);
 
     if (Array.isArray(response.data)) {
-      this.items = response.data; // Postavi stavke ako je odgovor niz
+      this.items = response.data; 
     } else {
       console.error("Odgovor API-ja nije niz:", response.data);
-      this.items = []; // Postavi prazni niz kao fallback
+      this.items = []; 
     }
   } catch (error) {
     console.error("Greška prilikom dohvaćanja stavki:", error);
   }
 },
-    // Dodaj novu stavku
     async addItem() {
   if (this.newItem.trim() !== "") {
     const token = localStorage.getItem("token");
@@ -72,22 +70,21 @@ export default {
 
       if (response.data && response.data.item) {
         if (Array.isArray(this.items)) {
-          this.items.push(response.data.item); // Dodaj novu stavku u niz
+          this.items.push(response.data.item); 
         } else {
           console.error("this.items nije niz:", this.items);
-          this.items = [response.data.item]; // Inicijaliziraj kao niz s novom stavkom
+          this.items = [response.data.item]; 
         }
       } else {
         console.error("Odgovor API-ja ne sadrži novu stavku:", response.data);
       }
 
-      this.newItem = ""; // Resetiraj input polje
+      this.newItem = ""; 
     } catch (error) {
       console.error("Greška prilikom dodavanja stavke:", error);
     }
   }
 },
-    // Ažuriraj status stavke
     async updateItem(item) {
       const token = localStorage.getItem("token");
 
@@ -99,17 +96,14 @@ export default {
         console.error("Greška prilikom ažuriranja stavke:", error);
       }
     },
-    // Obriši označene stavke
     async removeSelectedItems() {
   const token = localStorage.getItem("token");
 
   try {
-    // Pošalji zahtjev za brisanje označenih stavki
     await api.delete("/shoppingLista/completed", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Ukloni označene stavke iz lokalne liste
     this.items = this.items.filter((item) => !item.completed);
   } catch (error) {
     console.error("Greška prilikom brisanja označenih stavki:", error);
@@ -117,7 +111,6 @@ export default {
 },
   },
   async created() {
-    // Dohvati stavke prilikom učitavanja komponente
     await this.fetchItems();
   },
 };

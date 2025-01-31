@@ -57,13 +57,13 @@ import api from "@/services/api";
 export default {
   data() {
     return {
-      originalRecept: {}, // Originalni podaci recepta
-      tempRecept: {}, // Privremeni podaci za uređivanje
+      originalRecept: {}, 
+      tempRecept: {}, 
     };
   },
   async created() {
   try {
-    const token = localStorage.getItem("token"); // Dohvati token iz localStorage-a
+    const token = localStorage.getItem("token");
     if (!token) {
       throw new Error("Nije pronađen token.");
     }
@@ -91,7 +91,6 @@ export default {
       try {
         const promjene = {};
 
-        // Provjera koji podaci su promijenjeni
         for (const key in this.tempRecept) {
           if (this.tempRecept[key] !== this.originalRecept[key]) {
             if (key === "sastojci") {

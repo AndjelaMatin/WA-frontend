@@ -133,7 +133,6 @@ export default {
       this.isFavorite = response.data.isFavorite;
       this.recipe.svidanja = response.data.svidanja;
 
-      // Provjerite je li korisnik komentirao
       this.hasCommented = this.recipe.komentari.some(
         (komentar) => komentar.korisnik === this.korisnickiId
       );
@@ -224,7 +223,7 @@ export default {
       }
     },
     async deleteComment(komentarId) {
-  console.log("ID komentara koji se briše:", komentarId); // Dodano za debug
+  console.log("ID komentara koji se briše:", komentarId); 
   if (!komentarId) {
     console.error("Komentar nema validan ID. Provjerite podatke.");
     return;
@@ -241,7 +240,6 @@ export default {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Uklanjanje komentara iz lokalne liste
     this.recipe.komentari = this.recipe.komentari.filter(
       (komentar) => komentar._id !== komentarId
     );

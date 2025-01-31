@@ -113,7 +113,6 @@ export default {
           newPassword: this.passwords.newPassword || undefined,
         };
 
-        // Filtriranje undefined vrijednosti
         const payload = Object.fromEntries(
   Object.entries(updatePayload).filter(([, v]) => v !== undefined)
 );
@@ -123,7 +122,7 @@ export default {
         });
 
         alert("Podaci uspješno ažurirani.");
-        await this.fetchUserData(); // Ponovno dohvat podataka
+        await this.fetchUserData(); 
         this.disableEditing();
       } catch (error) {
         this.error = "Došlo je do greške pri ažuriranju podataka.";
